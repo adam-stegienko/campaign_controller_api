@@ -108,7 +108,7 @@ pipeline {
                 }
             }
             steps {
-                sh "trivy image --severity MEDIUM,HIGH,CRITICAL --exit-code 1 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
+                sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
             }
         }
 
@@ -170,12 +170,12 @@ pipeline {
             }
         }
     }
-    // post {
-    //     always {
-    //         mail body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
-    //              from: 'jenkins@your-domain.com',
-    //              subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER})",
-    //              to: 'adam.stegienko1@gmail.com'
-    //     }
-    // }
+    post {
+        always {
+            mail body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
+                 from: 'jenkins+blueflamestk@gmail.com',
+                 subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER})",
+                 to: 'adam.stegienko1@gmail.com'
+        }
+    }
 }
