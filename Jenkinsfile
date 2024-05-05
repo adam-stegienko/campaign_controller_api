@@ -40,6 +40,17 @@ pipeline {
     }
     stages {
 
+        stage('Clean Workspace') {
+            steps {
+                sshagent(['jenkins_github_np']) {
+                    sh 'git fetch --all'
+                    sh 'git reset --hard'
+                    sh 'git clean -fdx'
+                    sh 'git tag -d $(git tag) > /dev/null 2>&1'       
+                }
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout([
@@ -53,17 +64,6 @@ pipeline {
                         url: 'git@github.com:adam-stegienko/campaign_controller_api.git'
                     ]]
                 ])
-            }
-        }
-
-        stage('Clean Workspace') {
-            steps {
-                sshagent(['jenkins_github_np']) {
-                    sh 'git fetch --all'
-                    sh 'git reset --hard'
-                    sh 'git clean -fdx'
-                    sh 'git tag -d $(git tag) > /dev/null 2>&1'       
-                }
             }
         }
 
