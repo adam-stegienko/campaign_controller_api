@@ -61,7 +61,8 @@ pipeline {
                 sshagent(['jenkins_github_np']) {
                     sh 'git fetch --all'
                     sh 'git reset --hard'
-                    sh 'git clean -fdx'          
+                    sh 'git clean -fdx'
+                    sh 'git tag -d $(git tag) > /dev/null 2>&1'       
                 }
             }
         }
@@ -100,16 +101,16 @@ pipeline {
             }
         }
 
-        // stage('Docker Image Security Scan') {
-        //     when {
-        //         expression {
-        //            return currentBuild.currentResult == 'SUCCESS'
-        //         }
-        //     }
-        //     steps {
-        //         sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
-        //     }
-        // }
+        stage('Docker Image Security Scan') {
+            when {
+                expression {
+                   return currentBuild.currentResult == 'SUCCESS'
+                }
+            }
+            steps {
+                sh "trivy image --severity MEDIUM,HIGH,CRITICAL --exit-code 1 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
+            }
+        }
 
         stage('Docker Push') {
             when {
