@@ -25,6 +25,13 @@ def cleanGit() {
     sh 'git clean -fdx'
 }
 
+def calculateSnapshotVersion(latestReleaseTag) {
+    def (major, minor, patch) = latestReleaseTag.tokenize('.')
+    def patch = patch.toInteger() + 1
+    sh "mvn versions:set -DnewVersion=${major}.${minor}.${patch}-SNAPSHOT"
+    return "${major}.${minor}.${patch}-SNAPSHOT"
+}
+
 pipeline {
     agent any
     environment {
@@ -130,7 +137,7 @@ pipeline {
         stage('Docker Push') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && !env.DUPLICATED_TAG
+                    return currentBuild.currentResult == 'SUCCESS' && env.DUPLICATED_TAG == false
                 }
             }
             // steps {
@@ -156,7 +163,7 @@ pipeline {
         stage('Archive') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && !env.DUPLICATED_TAG
+                    return currentBuild.currentResult == 'SUCCESS' && env.DUPLICATED_TAG == false
                 }
             }
             steps {
@@ -167,7 +174,7 @@ pipeline {
         stage('Maven Deploy') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && !env.DUPLICATED_TAG
+                    return currentBuild.currentResult == 'SUCCESS' && env.DUPLICATED_TAG == false
                 }
             }
             steps {
@@ -183,7 +190,7 @@ pipeline {
         stage('Update pom.xml version, Tag, and Push to Git') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && !env.DUPLICATED_TAG
+                    return currentBuild.currentResult == 'SUCCESS' && env.DUPLICATED_TAG == false
                 }
             }
             steps {
@@ -192,6 +199,9 @@ pipeline {
                         cleanGit()
                         sh "git config --global user.email 'adam.stegienko1@gmail.com'"
                         sh "git config --global user.name 'Adam Stegienko'"
+                        def snapshotVersion = calculateSnapshotVersion(env.APP_VERSION)
+                        sh "git add pom.xml"
+                        sh "git commit -m '[skip ci] Dev app version: ${snapshotVersion}'"
                         sh "git tag ${env.APP_VERSION}"
                         sh "git push origin tag ${env.APP_VERSION}"
                     }
