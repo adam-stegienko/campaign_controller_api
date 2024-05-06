@@ -25,13 +25,6 @@ def cleanGit() {
     sh 'git clean -fdx'
 }
 
-def calculateSnapshotVersion(latestReleaseTag) {
-    def (major, minor, patch) = latestReleaseTag.tokenize('.')
-    patch = patch.toInteger() + 1
-    sh "mvn versions:set -DnewVersion=${major}.${minor}.${patch}-SNAPSHOT"
-    return "${major}.${minor}.${patch}-SNAPSHOT"
-}
-
 def DUPLICATED_TAG = 'false'
 
 pipeline {
@@ -59,7 +52,7 @@ pipeline {
             steps {
                 sshagent(['jenkins_github_np']) {
                     cleanGit()
-                    sh 'git tag -d $(git tag -l)'
+                    sh 'git tag -d $(git tag -l) > /dev/null 2>&1'
                 }
             }
         }
@@ -147,15 +140,6 @@ pipeline {
                     return currentBuild.currentResult == 'SUCCESS' && DUPLICATED_TAG == 'false'
                 }
             }
-            // steps {
-            //     script {
-            //         withDockerRegistry([credentialsId: "docker_registry_credentials", url: "https://${env.DOCKER_REGISTRY}"]) {
-            //             sh "docker push ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
-            //             sh "docker tag ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION} ${env.DOCKER_REGISTRY}/${env.APP_NAME}:latest"
-            //             sh "docker push ${env.DOCKER_REGISTRY}/${env.APP_NAME}:latest"
-            //         }
-            //     }
-            // }
             steps {
                 script {
                     docker.withRegistry("https://${env.DOCKER_REGISTRY}", "docker_registry_credentials") {
