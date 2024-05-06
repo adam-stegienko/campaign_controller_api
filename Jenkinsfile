@@ -118,12 +118,21 @@ pipeline {
                     return currentBuild.currentResult == 'SUCCESS'
                 }
             }
+            // steps {
+            //     script {
+            //         withDockerRegistry([credentialsId: "docker_registry_credentials", url: "https://${env.DOCKER_REGISTRY}"]) {
+            //             sh "docker push ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
+            //             sh "docker tag ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION} ${env.DOCKER_REGISTRY}/${env.APP_NAME}:latest"
+            //             sh "docker push ${env.DOCKER_REGISTRY}/${env.APP_NAME}:latest"
+            //         }
+            //     }
+            // }
             steps {
                 script {
-                    withDockerRegistry([credentialsId: "docker_registry_credentials", url: "https://${env.DOCKER_REGISTRY}"]) {
-                        sh "docker push ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
-                        sh "docker tag ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION} ${env.DOCKER_REGISTRY}/${env.APP_NAME}:latest"
-                        sh "docker push ${env.DOCKER_REGISTRY}/${env.APP_NAME}:latest"
+                    docker.withRegistry("https://${env.DOCKER_REGISTRY}", "docker_registry_credentials") {
+                        def appImage = docker.image("${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}")
+                        appImage.push()
+                        appImage.push('latest')
                     }
                 }
             }
@@ -142,9 +151,11 @@ pipeline {
                 }
             }
             steps {
-                withMaven() {
-                    sh "mvn versions:set -DnewVersion=${env.APP_VERSION}"
-                    sh 'mvn clean deploy'
+                catchError(buildResult: 'SUCCESS', stageResult: 'ABORTED') {
+                    withMaven() {
+                        sh "mvn versions:set -DnewVersion=${env.APP_VERSION}"
+                        sh 'mvn clean deploy'
+                    }
                 }
             }
         }
@@ -174,7 +185,7 @@ pipeline {
         always {
             emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
                  from: 'jenkins+blueflamestk@gmail.com',
-                 subject: "Job '${env.JOB_NAME}' (${env.BUILD_NUMBER})",
+                 subject: "${currentBuild.currentResult}: Job '${env.JOB_NAME}' (${env.BUILD_NUMBER})",
                  to: 'adam.stegienko1@gmail.com'
         }
     }
