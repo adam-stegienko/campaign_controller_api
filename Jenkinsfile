@@ -75,6 +75,12 @@ pipeline {
                         latestTag = sh(returnStdout: true, script: 'git describe --tags --abbrev=0').trim()
                     } catch (Exception e) {}
                     env.APP_VERSION = calculateVersion(latestTag)
+
+                    // Check if the new version already exists as a tag
+                    def existingTags = sh(returnStdout: true, script: 'git tag').trim().split('\n')
+                    if (existingTags.contains(env.APP_VERSION)) {
+                        error("Version ${env.APP_VERSION} already exists")
+                    }
                 }
             }
         }
