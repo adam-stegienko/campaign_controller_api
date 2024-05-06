@@ -1,20 +1,26 @@
 package com.adam_stegienko.app;
 
-import static org.junit.Assert.assertTrue;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.ResponseEntity;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-{
-    /**
-     * Rigorous Test :-)
-     */
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class AppTest {
+
+    @Value("${server.port}")
+    private int port;
+
+    @Autowired
+    private TestRestTemplate restTemplate;
+
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        assertTrue( true );
+    public void helloShouldReturnHelloWorld() {
+        ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/", String.class);
+        assertThat(response.getBody()).isEqualTo("Hello, World!");
     }
 }
