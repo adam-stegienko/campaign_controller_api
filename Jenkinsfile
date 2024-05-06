@@ -94,12 +94,21 @@ pipeline {
                         echo "Latest commit tag: ${latestCommitTag}"
                     } catch (Exception e) {}
                     if (latestCommitTag) {
-                        env.DUPLICATED_TAG = 'true'
-                        sh "echo 'Tag ${latestCommitTag} already exists for the latest commit. DUPLICATED_TAG env var is set to: '${env.DUPLICATED_TAG}"
+                        def duplicatedTag = 'true'
+                        env.DUPLICATED_TAG = duplicatedTag
+                        sh "echo 'Tag ${latestCommitTag} already exists for the latest commit. DUPLICATED_TAG env var is set to: '${duplicatedTag}"
                     } else {
                         sh "echo ${latestTag} '->' ${env.APP_VERSION}"
                         sh "echo ${env.DUPLICATED_TAG}"
                     }
+                }
+            }
+        }
+
+        stage('Test DUPLICATED_TAG') {
+            steps {
+                script {
+                    echo "DUPLICATED_TAG env var value is set to: ${env.DUPLICATED_TAG}"
                 }
             }
         }
