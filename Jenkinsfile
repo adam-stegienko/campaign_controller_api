@@ -85,7 +85,7 @@ pipeline {
                     if (existingTags.contains(env.APP_VERSION)) {
                         env.DUPLICATED_TAG = true
                     }
-                    sh "echo ${latestTag} -> ${env.APP_VERSION}"
+                    sh "echo ${latestTag} '->' ${env.APP_VERSION}"
                 }
             }
         }
