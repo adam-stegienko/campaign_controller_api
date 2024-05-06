@@ -79,7 +79,7 @@ pipeline {
                     // Check if the new version already exists as a tag
                     def existingTags = sh(returnStdout: true, script: 'git tag').trim().split('\n')
                     if (existingTags.contains(env.APP_VERSION)) {
-                        error("Version ${env.APP_VERSION} already exists")
+                        def duplicatedTag = True
                     }
                 }
             }
@@ -122,6 +122,7 @@ pipeline {
             when {
                 expression {
                     return currentBuild.currentResult == 'SUCCESS'
+                    !duplicatedTag
                 }
             }
             // steps {
@@ -145,6 +146,12 @@ pipeline {
         }
 
         stage('Archive') {
+            when {
+                expression {
+                    return currentBuild.currentResult == 'SUCCESS'
+                    !duplicatedTag
+                }
+            }
             steps {
                 archiveArtifacts artifacts: "**/target/${env.APP_NAME}*.jar", fingerprint: true
             }
@@ -154,6 +161,7 @@ pipeline {
             when {
                 expression {
                     return currentBuild.currentResult == 'SUCCESS'
+                    !duplicatedTag
                 }
             }
             steps {
@@ -170,6 +178,7 @@ pipeline {
             when {
                 expression {
                     return currentBuild.currentResult == 'SUCCESS'
+                    !duplicatedTag
                 }
             }
             steps {
