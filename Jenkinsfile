@@ -96,7 +96,7 @@ pipeline {
                     } catch (Exception e) {}
                     if (latestCommitTag) {
                         DUPLICATED_TAG = 'true'
-                        sh "echo 'Tag ${latestCommitTag} already exists for the latest commit. DUPLICATED_TAG env var is set to: '${duplicatedTag}"
+                        sh "echo 'Tag ${latestCommitTag} already exists for the latest commit. DUPLICATED_TAG env var is set to: '${DUPLICATED_TAG}"
                     } else {
                         sh "echo ${latestTag} '->' ${env.APP_VERSION}"
                         sh "echo DUPLICATED_TAG: ${DUPLICATED_TAG}"
