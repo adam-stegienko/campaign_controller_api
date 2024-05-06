@@ -202,15 +202,6 @@ pipeline {
                         cleanGit()
                         sh "git config --global user.email 'adam.stegienko1@gmail.com'"
                         sh "git config --global user.name 'Adam Stegienko'"
-                        
-                        sh "git fetch --all"
-                        sh "git checkout master"
-                        sh "git stash"
-                        sh "git merge origin/master"
-                        def snapshotVersion = calculateSnapshotVersion(env.APP_VERSION)
-                        sh "git add pom.xml"
-                        sh "git commit -m '[skip ci] Dev app version: ${snapshotVersion}'"
-                        sh "git push origin master"
                         sh "git tag ${env.APP_VERSION}"
                         sh "git push origin tag ${env.APP_VERSION}"
                     }
