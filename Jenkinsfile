@@ -32,6 +32,8 @@ def calculateSnapshotVersion(latestReleaseTag) {
     return "${major}.${minor}.${patch}-SNAPSHOT"
 }
 
+def DUPLICATED_TAG = 'false'
+
 pipeline {
     agent any
     environment {
@@ -42,7 +44,6 @@ pipeline {
         SONAR_SOURCES = './src'
         SONAR_SONAR_LOGIN = 'adam-stegienko'
         DOCKER_REGISTRY = 'registry.stegienko.com:8443'
-        DUPLICATED_TAG = 'false'
     }
     options {
         timestamps()
@@ -94,12 +95,11 @@ pipeline {
                         echo "Latest commit tag: ${latestCommitTag}"
                     } catch (Exception e) {}
                     if (latestCommitTag) {
-                        def duplicatedTag = 'true'
-                        env.DUPLICATED_TAG = duplicatedTag
+                        DUPLICATED_TAG = 'true'
                         sh "echo 'Tag ${latestCommitTag} already exists for the latest commit. DUPLICATED_TAG env var is set to: '${duplicatedTag}"
                     } else {
                         sh "echo ${latestTag} '->' ${env.APP_VERSION}"
-                        sh "echo ${env.DUPLICATED_TAG}"
+                        sh "echo DUPLICATED_TAG: ${DUPLICATED_TAG}"
                     }
                 }
             }
@@ -108,7 +108,7 @@ pipeline {
         stage('Test DUPLICATED_TAG') {
             steps {
                 script {
-                    echo "DUPLICATED_TAG env var value is set to: ${env.DUPLICATED_TAG}"
+                    echo "DUPLICATED_TAG env var value is set to: ${DUPLICATED_TAG}"
                 }
             }
         }
@@ -149,7 +149,7 @@ pipeline {
         stage('Docker Push') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && env.DUPLICATED_TAG == 'false'
+                    return currentBuild.currentResult == 'SUCCESS' && DUPLICATED_TAG == 'false'
                 }
             }
             // steps {
@@ -175,7 +175,7 @@ pipeline {
         stage('Archive') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && env.DUPLICATED_TAG == 'false'
+                    return currentBuild.currentResult == 'SUCCESS' && DUPLICATED_TAG == 'false'
                 }
             }
             steps {
@@ -186,7 +186,7 @@ pipeline {
         stage('Maven Deploy') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && env.DUPLICATED_TAG == 'false'
+                    return currentBuild.currentResult == 'SUCCESS' && DUPLICATED_TAG == 'false'
                 }
             }
             steps {
@@ -202,7 +202,7 @@ pipeline {
         stage('Update pom.xml version, Tag, and Push to Git') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && env.DUPLICATED_TAG == 'false'
+                    return currentBuild.currentResult == 'SUCCESS' && DUPLICATED_TAG == 'false'
                 }
             }
             steps {
