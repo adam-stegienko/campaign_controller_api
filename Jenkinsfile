@@ -91,9 +91,11 @@ pipeline {
                     def latestCommitTag = ''
                     try {
                         latestCommitTag = sh(returnStdout: true, script: 'git tag --contains HEAD').trim()
+                        echo "Latest commit tag: ${latestCommitTag}"
                     } catch (Exception e) {}
                     if (latestCommitTag) {
                         env.DUPLICATED_TAG = true
+                        sh "echo 'Tag ${latestCommitTag} already exists for the latest commit'"
                     } else {
                         sh "echo ${latestTag} '->' ${env.APP_VERSION}"
                     }
