@@ -203,11 +203,21 @@ pipeline {
             steps {
                 script {
                     sshagent(['jenkins_github_np']) {
-                        cleanGit()
                         sh "git config --global user.email 'adam.stegienko1@gmail.com'"
                         sh "git config --global user.name 'Adam Stegienko'"
+                        cleanGit()
                         sh "git tag ${env.APP_VERSION}"
                         sh "git push origin tag ${env.APP_VERSION}"
+                        sh "git checkout master"
+                        cleanGit()
+                        sh "git pull origin master"
+                        def latestReleaseTag = env.APP_VERSION
+                        def newSnapshotVersion = calculateSnapshotVersion(latestReleaseTag)
+                        sh "mvn versions:set -DnewVersion=${newSnapshotVersion}"
+                        def commitMessage = sh(returnStdout: true, script: 'git log -1 --pretty=%B').trim()
+                        sh "git add pom.xml"
+                        sh "git commit --amend --no-edit -m '[skip ci] ${commitMessage}'"
+                        sh "git push origin master --force"
                     }
                 }
             }
