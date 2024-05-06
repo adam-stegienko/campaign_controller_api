@@ -76,7 +76,7 @@ pipeline {
                 script {
                     def latestTag = '0.0.0'
                     try {
-                        latestTag = sh(returnStdout: true, script: 'git describe --tags --abbrev=0').trim()
+                        latestTag = sh(returnStdout: true, script: 'git tag | sort -Vr | head -n 1').trim()
                     } catch (Exception e) {}
                     env.APP_VERSION = calculateVersion(latestTag)
 
