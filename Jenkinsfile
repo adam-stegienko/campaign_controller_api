@@ -27,7 +27,7 @@ def cleanGit() {
 
 def calculateSnapshotVersion(latestReleaseTag) {
     def (major, minor, patch) = latestReleaseTag.tokenize('.')
-    def patch = patch.toInteger() + 1
+    patch = patch.toInteger() + 1
     sh "mvn versions:set -DnewVersion=${major}.${minor}.${patch}-SNAPSHOT"
     return "${major}.${minor}.${patch}-SNAPSHOT"
 }
