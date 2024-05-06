@@ -80,12 +80,16 @@ pipeline {
                     } catch (Exception e) {}
                     env.APP_VERSION = calculateVersion(latestTag)
 
-                    // Check if the new version already exists as a tag
-                    def existingTags = sh(returnStdout: true, script: 'git tag').trim().split('\n')
-                    if (existingTags.contains(env.APP_VERSION)) {
+                    // Check if the latest commit already has a tag
+                    def latestCommitTag = ''
+                    try {
+                        latestCommitTag = sh(returnStdout: true, script: 'git tag --contains HEAD').trim()
+                    } catch (Exception e) {}
+                    if (latestCommitTag) {
                         env.DUPLICATED_TAG = true
+                    } else {
+                        sh "echo ${latestTag} '->' ${env.APP_VERSION}"
                     }
-                    sh "echo ${latestTag} '->' ${env.APP_VERSION}"
                 }
             }
         }
