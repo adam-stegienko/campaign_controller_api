@@ -6,7 +6,7 @@
 
   <groupId>com.adam_stegienko.app</groupId>
   <artifactId>campaign_controller_api</artifactId>
-  <version>0.0.3-SNAPSHOT</version>
+  <version>0.0.6-SNAPSHOT</version>
 
   <name>campaign_controller_api</name>
 

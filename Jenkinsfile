@@ -19,6 +19,12 @@ def calculateVersion(latestTag) {
     return "${major}.${minor}.${patch}"
 }
 
+def cleanGit() {
+    sh 'git fetch --all'
+    sh 'git reset --hard'
+    sh 'git clean -fdx'
+}
+
 pipeline {
     agent any
     environment {
@@ -29,7 +35,7 @@ pipeline {
         SONAR_SOURCES = './src'
         SONAR_SONAR_LOGIN = 'adam-stegienko'
         DOCKER_REGISTRY = 'registry.stegienko.com:8443'
-        DUPLIACTED_TAG = false
+        DUPLICATED_TAG = false
     }
     options {
         timestamps()
@@ -44,10 +50,7 @@ pipeline {
         stage('Clean Workspace') {
             steps {
                 sshagent(['jenkins_github_np']) {
-                    sh 'git fetch --all'
-                    sh 'git reset --hard'
-                    sh 'git clean -fdx'
-                    sh 'git tag -d $(git tag) > /dev/null 2>&1'       
+                    cleanGit()
                 }
             }
         }
@@ -80,8 +83,9 @@ pipeline {
                     // Check if the new version already exists as a tag
                     def existingTags = sh(returnStdout: true, script: 'git tag').trim().split('\n')
                     if (existingTags.contains(env.APP_VERSION)) {
-                        env.DUPLIACTED_TAG = true
+                        env.DUPLICATED_TAG = true
                     }
+                    sh "echo ${latestTag} -> ${env.APP_VERSION}"
                 }
             }
         }
@@ -122,7 +126,7 @@ pipeline {
         stage('Docker Push') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && !env.duplicatedTag
+                    return currentBuild.currentResult == 'SUCCESS' && !env.DUPLICATED_TAG
                 }
             }
             // steps {
@@ -148,7 +152,7 @@ pipeline {
         stage('Archive') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && !env.duplicatedTag
+                    return currentBuild.currentResult == 'SUCCESS' && !env.DUPLICATED_TAG
                 }
             }
             steps {
@@ -159,7 +163,7 @@ pipeline {
         stage('Maven Deploy') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && !env.duplicatedTag
+                    return currentBuild.currentResult == 'SUCCESS' && !env.DUPLICATED_TAG
                 }
             }
             steps {
@@ -175,17 +179,15 @@ pipeline {
         stage('Update pom.xml version, Tag, and Push to Git') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS' && !env.duplicatedTag
+                    return currentBuild.currentResult == 'SUCCESS' && !env.DUPLICATED_TAG
                 }
             }
             steps {
                 script {
                     sshagent(['jenkins_github_np']) {
+                        cleanGit()
                         sh "git config --global user.email 'adam.stegienko1@gmail.com'"
                         sh "git config --global user.name 'Adam Stegienko'"
-                        sh 'git fetch --all'
-                        sh 'git reset --hard'
-                        sh 'git clean -fdx'
                         sh "git tag ${env.APP_VERSION}"
                         sh "git push origin tag ${env.APP_VERSION}"
                     }
