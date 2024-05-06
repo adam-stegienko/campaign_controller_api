@@ -29,6 +29,7 @@ pipeline {
         SONAR_SOURCES = './src'
         SONAR_SONAR_LOGIN = 'adam-stegienko'
         DOCKER_REGISTRY = 'registry.stegienko.com:8443'
+        DUPLIACTED_TAG = false
     }
     options {
         timestamps()
@@ -79,7 +80,7 @@ pipeline {
                     // Check if the new version already exists as a tag
                     def existingTags = sh(returnStdout: true, script: 'git tag').trim().split('\n')
                     if (existingTags.contains(env.APP_VERSION)) {
-                        def duplicatedTag = True
+                        env.DUPLIACTED_TAG = true
                     }
                 }
             }
@@ -121,8 +122,7 @@ pipeline {
         stage('Docker Push') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS'
-                    !duplicatedTag
+                    return currentBuild.currentResult == 'SUCCESS' && !env.duplicatedTag
                 }
             }
             // steps {
@@ -148,8 +148,7 @@ pipeline {
         stage('Archive') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS'
-                    !duplicatedTag
+                    return currentBuild.currentResult == 'SUCCESS' && !env.duplicatedTag
                 }
             }
             steps {
@@ -160,8 +159,7 @@ pipeline {
         stage('Maven Deploy') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS'
-                    !duplicatedTag
+                    return currentBuild.currentResult == 'SUCCESS' && !env.duplicatedTag
                 }
             }
             steps {
@@ -177,8 +175,7 @@ pipeline {
         stage('Update pom.xml version, Tag, and Push to Git') {
             when {
                 expression {
-                    return currentBuild.currentResult == 'SUCCESS'
-                    !duplicatedTag
+                    return currentBuild.currentResult == 'SUCCESS' && !env.duplicatedTag
                 }
             }
             steps {
