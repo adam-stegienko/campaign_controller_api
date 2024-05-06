@@ -59,6 +59,7 @@ pipeline {
             steps {
                 sshagent(['jenkins_github_np']) {
                     cleanGit()
+                    sh 'git tag -d $(git tag -l)'
                 }
             }
         }
@@ -69,7 +70,9 @@ pipeline {
                     $class: 'GitSCM',
                     branches: [[name: '*/master']],
                     doGenerateSubmoduleConfigurations: 'false',
-                    extensions: [],
+                    extensions: [
+                        [$class: 'CloneOption', noTags: false, shallow: false]
+                    ],
                     submoduleCfg: [],
                     userRemoteConfigs: [[
                         credentialsId: 'jenkins_github_np',
@@ -101,14 +104,6 @@ pipeline {
                         sh "echo ${latestTag} '->' ${env.APP_VERSION}"
                         sh "echo DUPLICATED_TAG: ${DUPLICATED_TAG}"
                     }
-                }
-            }
-        }
-
-        stage('Test DUPLICATED_TAG') {
-            steps {
-                script {
-                    echo "DUPLICATED_TAG env var value is set to: ${DUPLICATED_TAG}"
                 }
             }
         }
