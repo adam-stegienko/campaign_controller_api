@@ -88,7 +88,6 @@ pipeline {
                     def latestCommitTag = ''
                     try {
                         latestCommitTag = sh(returnStdout: true, script: 'git tag --contains HEAD').trim()
-                        echo "Latest commit tag: ${latestCommitTag}"
                     } catch (Exception e) {}
                     if (latestCommitTag) {
                         DUPLICATED_TAG = 'true'
