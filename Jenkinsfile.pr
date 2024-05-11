@@ -38,7 +38,7 @@ pipeline {
             steps {
                 checkout([
                     $class: 'GitSCM',
-                    branches: [[name: '*/${env.BRANCH_NAME}']],
+                    branches: [[name: '*/${env.ghprbSourceBranch}']],
                     doGenerateSubmoduleConfigurations: 'false',
                     extensions: [
                         [$class: 'CloneOption', noTags: false, shallow: false]
