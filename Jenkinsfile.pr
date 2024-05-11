@@ -37,7 +37,7 @@ pipeline {
         // stage('Checkout') {
             steps {
                 script {
-                    sh 'echo "Checking out PR branch"'
+                    sh 'echo "Checking out the PR branch"'
                 }
                 checkout scm
             }
