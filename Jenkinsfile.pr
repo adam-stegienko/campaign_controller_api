@@ -29,7 +29,6 @@ pipeline {
             steps {
                 sshagent(['jenkins_github_np']) {
                     cleanGit()
-                    sh 'git tag -d $(git tag -l) > /dev/null 2>&1'
                 }
             }
         }
