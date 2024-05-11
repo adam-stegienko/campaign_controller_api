@@ -34,26 +34,14 @@ pipeline {
             }
         }
 
-        // // stage('Checkout') {
-        //     steps {
-        //         script {
-        //             sh 'echo "Checking out ${env.ghprbSourceBranch}"'
-        //         }
-        //         checkout([
-        //             $class: 'GitSCM',
-        //             branches: [[name: 'refs/remotes/origin/${env.ghprbSourceBranch}']],
-        //             doGenerateSubmoduleConfigurations: 'false',
-        //             extensions: [
-        //                 [$class: 'CloneOption', noTags: false, shallow: false]
-        //             ],
-        //             submoduleCfg: [],
-        //             userRemoteConfigs: [[
-        //                 credentialsId: 'jenkins_github_np',
-        //                 url: 'git@github.com:adam-stegienko/campaign_controller_api.git'
-        //             ]]
-        //         ])
-        //     }
-        // }
+        // stage('Checkout') {
+            steps {
+                script {
+                    sh 'echo "Checking out PR branch"'
+                }
+                checkout scm
+            }
+        }
 
         stage('Provide Config Files') {
             steps {
