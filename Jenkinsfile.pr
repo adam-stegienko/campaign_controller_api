@@ -34,14 +34,6 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            steps {
-                script {
-                    sh 'echo "Checking out the PR branch"'
-                }
-            }
-        }
-
         stage('Provide Config Files') {
             steps {
                 configFileProvider([configFile(fileId: '35c99061-027f-457b-87e9-e5950705128a', targetLocation: 'application.properties'),
