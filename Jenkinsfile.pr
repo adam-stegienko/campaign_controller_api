@@ -34,12 +34,11 @@ pipeline {
             }
         }
 
-        // stage('Checkout') {
+        stage('Checkout') {
             steps {
                 script {
                     sh 'echo "Checking out the PR branch"'
                 }
-                checkout scm
             }
         }
 
