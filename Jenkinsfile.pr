@@ -34,24 +34,6 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/${env.BRANCH_NAME}']],
-                    doGenerateSubmoduleConfigurations: 'false',
-                    extensions: [
-                        [$class: 'CloneOption', noTags: false, shallow: false]
-                    ],
-                    submoduleCfg: [],
-                    userRemoteConfigs: [[
-                        credentialsId: 'jenkins_github_np',
-                        url: 'git@github.com:adam-stegienko/campaign_controller_api.git'
-                    ]]
-                ])
-            }
-        }
-
         stage('Provide Config Files') {
             steps {
                 configFileProvider([configFile(fileId: '35c99061-027f-457b-87e9-e5950705128a', targetLocation: 'application.properties'),
@@ -64,7 +46,7 @@ pipeline {
             steps {
                 withMaven() {
                     withSonarQubeEnv(env.SONAR_SERVER) {
-                        sh "mvn clean verify sonar:sonar -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.projectName='${env.SONAR_PROJECT_NAME}'"
+                        sh "mvn clean install sonar:sonar -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.projectName='${env.SONAR_PROJECT_NAME}'"
                     }
                 }
             }
