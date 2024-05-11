@@ -29,28 +29,33 @@ pipeline {
             steps {
                 sshagent(['jenkins_github_np']) {
                     cleanGit()
+                    sh 'echo "Checking out ${env.ghprbSourceBranch}"'
                     sh 'git tag -d $(git tag -l) > /dev/null 2>&1'
+                    sh 'git '
                 }
             }
         }
 
-        stage('Checkout') {
-            steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/${env.BRANCH_NAME}']],
-                    doGenerateSubmoduleConfigurations: 'false',
-                    extensions: [
-                        [$class: 'CloneOption', noTags: false, shallow: false]
-                    ],
-                    submoduleCfg: [],
-                    userRemoteConfigs: [[
-                        credentialsId: 'jenkins_github_np',
-                        url: 'git@github.com:adam-stegienko/campaign_controller_api.git'
-                    ]]
-                ])
-            }
-        }
+        // // stage('Checkout') {
+        //     steps {
+        //         script {
+        //             sh 'echo "Checking out ${env.ghprbSourceBranch}"'
+        //         }
+        //         checkout([
+        //             $class: 'GitSCM',
+        //             branches: [[name: 'refs/remotes/origin/${env.ghprbSourceBranch}']],
+        //             doGenerateSubmoduleConfigurations: 'false',
+        //             extensions: [
+        //                 [$class: 'CloneOption', noTags: false, shallow: false]
+        //             ],
+        //             submoduleCfg: [],
+        //             userRemoteConfigs: [[
+        //                 credentialsId: 'jenkins_github_np',
+        //                 url: 'git@github.com:adam-stegienko/campaign_controller_api.git'
+        //             ]]
+        //         ])
+        //     }
+        // }
 
         stage('Provide Config Files') {
             steps {
