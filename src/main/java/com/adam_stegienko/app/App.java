@@ -11,8 +11,6 @@ public class App {
         SpringApplication.run(App.class, args);
     }
 
-// TEST PR s
-
     @RestController
     class HelloController {
         @GetMapping("/")
