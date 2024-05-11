@@ -34,23 +34,23 @@ pipeline {
             }
         }
 
-        stage('Checkout') {
-            steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: '*/${env.ghprbSourceBranch}']],
-                    doGenerateSubmoduleConfigurations: 'false',
-                    extensions: [
-                        [$class: 'CloneOption', noTags: false, shallow: false]
-                    ],
-                    submoduleCfg: [],
-                    userRemoteConfigs: [[
-                        credentialsId: 'jenkins_github_np',
-                        url: 'git@github.com:adam-stegienko/campaign_controller_api.git'
-                    ]]
-                ])
-            }
-        }
+        // stage('Checkout') {
+        //     steps {
+        //         checkout([
+        //             $class: 'GitSCM',
+        //             branches: [[name: '*/${env.ghprbSourceBranch}']],
+        //             doGenerateSubmoduleConfigurations: 'false',
+        //             extensions: [
+        //                 [$class: 'CloneOption', noTags: false, shallow: false]
+        //             ],
+        //             submoduleCfg: [],
+        //             userRemoteConfigs: [[
+        //                 credentialsId: 'jenkins_github_np',
+        //                 url: 'git@github.com:adam-stegienko/campaign_controller_api.git'
+        //             ]]
+        //         ])
+        //     }
+        // }
 
         stage('Provide Config Files') {
             steps {
