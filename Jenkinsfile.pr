@@ -30,28 +30,27 @@ pipeline {
                 sshagent(['jenkins_github_np']) {
                     cleanGit()
                     sh 'git tag -d $(git tag -l) > /dev/null 2>&1'
-                    checkout scm
                 }
             }
         }
 
         // stage('Checkout') {
-        //     steps {
-        //         checkout([
-        //             $class: 'GitSCM',
-        //             branches: [[name: '*/${env.ghprbSourceBranch}']],
-        //             doGenerateSubmoduleConfigurations: 'false',
-        //             extensions: [
-        //                 [$class: 'CloneOption', noTags: false, shallow: false]
-        //             ],
-        //             submoduleCfg: [],
-        //             userRemoteConfigs: [[
-        //                 credentialsId: 'jenkins_github_np',
-        //                 url: 'git@github.com:adam-stegienko/campaign_controller_api.git'
-        //             ]]
-        //         ])
-        //     }
-        // }
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: '*/${env.ghprbSourceBranch}']],
+                    doGenerateSubmoduleConfigurations: 'false',
+                    extensions: [
+                        [$class: 'CloneOption', noTags: false, shallow: false]
+                    ],
+                    submoduleCfg: [],
+                    userRemoteConfigs: [[
+                        credentialsId: 'jenkins_github_np',
+                        url: 'git@github.com:adam-stegienko/campaign_controller_api.git'
+                    ]]
+                ])
+            }
+        }
 
         stage('Provide Config Files') {
             steps {
