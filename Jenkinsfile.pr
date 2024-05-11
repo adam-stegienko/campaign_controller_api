@@ -67,7 +67,7 @@ pipeline {
             steps {
                 withMaven() {
                     withSonarQubeEnv(env.SONAR_SERVER) {
-                        sh "mvn clean verify sonar:sonar -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.projectName='${env.SONAR_PROJECT_NAME}'"
+                        sh "mvn clean install sonar:sonar -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.projectName='${env.SONAR_PROJECT_NAME}'"
                     }
                 }
             }
