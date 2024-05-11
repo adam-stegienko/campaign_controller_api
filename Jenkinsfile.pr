@@ -31,11 +31,9 @@ pipeline {
                     cleanGit()
                     sh 'echo "Checking out ${env.ghprbSourceBranch}"'
                     sh 'git tag -d $(git tag -l) > /dev/null 2>&1'
-                    sh 'git '
                 }
             }
         }
-        // sdsdasdasdgfgfgf
 
         // // stage('Checkout') {
         //     steps {
