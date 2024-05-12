@@ -28,7 +28,7 @@ pipeline {
         stage('Clean Workspace') {
             steps {
                 sshagent(['jenkins_github_np']) {
-                    cleanGit() // tester
+                    cleanGit()
                 }
             }
         }
@@ -62,7 +62,7 @@ pipeline {
                 }
             }
             steps {
-                sh "docker build --build-arg APP_VERSION=${env.APP_VERSION} -t ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION} ."
+                sh "docker build --build-arg APP_VERSION=${APP_VERSION} -t ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${APP_VERSION} ."
             }
         }
 
