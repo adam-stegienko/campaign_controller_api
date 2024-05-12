@@ -25,6 +25,14 @@ pipeline {
     }
     stages {
 
+        stage('Start') {
+            steps {
+                script {
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Pipeline started"]])
+                }
+            }
+        }
+
         stage('Clean Workspace') {
             steps {
                 sshagent(['jenkins_github_np']) {
@@ -79,6 +87,15 @@ pipeline {
     }
     post {
         always {
+            script {
+                if (currentBuild.currentResult == 'SUCCESS') {
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build succeeded"]])
+                } else if (currentBuild.currentResult == 'FAILURE') {
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build failed"]])
+                } else {
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build finished with result: ${currentBuild.currentResult}"]])
+                }
+            }
             emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
                  from: 'jenkins+blueflamestk@gmail.com',
                  subject: "${currentBuild.currentResult}: Job '${env.JOB_NAME}' (${env.BUILD_NUMBER})",

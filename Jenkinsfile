@@ -48,6 +48,14 @@ pipeline {
     }
     stages {
 
+        stage('Start') {
+            steps {
+                script {
+                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "Build started", state: "PENDING"]]]])
+                }
+            }
+        }
+
         stage('Clean Workspace') {
             steps {
                 sshagent(['jenkins_github_np']) {
@@ -206,6 +214,15 @@ pipeline {
     }
     post {
         always {
+            script {
+                if (currentBuild.currentResult == 'SUCCESS') {
+                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build succeeded", state: "SUCCESS"]]]])
+                } else if (currentBuild.currentResult == 'FAILURE') {
+                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "WorseOrEqualToBuildResult", message: "Build failed", state: "FAILURE"]]]])
+                } else {
+                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "Build finished with result: ${currentBuild.currentResult}", state: "ERROR"]]]])
+                }
+            }
             emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
                  from: 'jenkins+blueflamestk@gmail.com',
                  subject: "${currentBuild.currentResult}: Job '${env.JOB_NAME}' (${env.BUILD_NUMBER})",
