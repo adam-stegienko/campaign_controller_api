@@ -11,6 +11,8 @@ public class App {
         SpringApplication.run(App.class, args);
     }
 
+// new feature here
+
     @RestController
     class HelloController {
         @GetMapping("/")
