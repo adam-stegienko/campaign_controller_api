@@ -58,7 +58,7 @@ pipeline {
                             APP_VERSION = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
                         } // sth
                         sh "mvn versions:set -DnewVersion=${APP_VERSION}"
-                        sh "mvn clean install sonar:sonar -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.projectName='${env.SONAR_PROJECT_NAME}'"
+                        sh "mvn clean package sonar:sonar -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.projectName='${env.SONAR_PROJECT_NAME}'"
                     }
                 }
             }
@@ -91,13 +91,13 @@ pipeline {
             script {
                 if (currentBuild.currentResult == 'SUCCESS') {
                     step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build succeeded", state: "SUCCESS"]]]])
-                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build succeeded"], state: 'SUCCESS'])
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build succeeded"]])
                 } else if (currentBuild.currentResult == 'FAILURE') {
                     step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build failed", state: "FAILURE"]]]])
-                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build failed"], state: 'FAILURE'])
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build failed"]])
                 } else {
                     step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "Build aborted. Result: ${currentBuild.currentResult}", state: "ERROR"]]]])
-                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build aborted. Result: ${currentBuild.currentResult}"], state: 'ERROR'])
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build aborted. Result: ${currentBuild.currentResult}"]])
                 }
             }
             emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
