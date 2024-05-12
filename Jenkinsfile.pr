@@ -28,7 +28,7 @@ pipeline {
         stage('Clean Workspace') {
             steps {
                 sshagent(['jenkins_github_np']) {
-                    cleanGit() // tester
+                    cleanGit()
                 }
             }
         }
