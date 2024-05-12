@@ -89,11 +89,11 @@ pipeline {
         always {
             script {
                 if (currentBuild.currentResult == 'SUCCESS') {
-                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build succeeded"]])
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build succeeded"], statusResult: 'SUCCESS'])
                 } else if (currentBuild.currentResult == 'FAILURE') {
-                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build failed"]])
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build failed"], statusResult: 'FAILURE'])
                 } else {
-                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build aborted. Result: ${currentBuild.currentResult}"]])
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build aborted. Result: ${currentBuild.currentResult}"], statusResult: 'ERROR'])
                 }
             }
             emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
