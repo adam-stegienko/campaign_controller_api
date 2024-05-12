@@ -3,7 +3,6 @@ def cleanGit() {
     sh 'git reset --hard'
     sh 'git clean -fdx'
 }
-
 pipeline {
     agent any
     environment {
@@ -73,7 +72,7 @@ pipeline {
                 }
             }
             steps {
-                sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.APP_NAME}:${APP_VERSION}"
+                sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${APP_VERSION}"
             }
         }
     }
