@@ -45,6 +45,8 @@ pipeline {
             steps {
                 withMaven() {
                     withSonarQubeEnv(env.SONAR_SERVER) {
+                        env.APP_VERSION = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
+                        sh "mvn versions:set -DnewVersion=${env.APP_VERSION}"
                         sh "mvn clean install sonar:sonar -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.projectName='${env.SONAR_PROJECT_NAME}'"
                     }
                 }
@@ -58,7 +60,7 @@ pipeline {
                 }
             }
             steps {
-                sh "docker build -t ${env.APP_NAME}:${env.BRANCH_NAME} ."
+                sh "docker build -t ${env.APP_NAME}:${env.APP_VERSION} ."
             }
         }
 
