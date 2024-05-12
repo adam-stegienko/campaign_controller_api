@@ -62,7 +62,7 @@ pipeline {
                 }
             }
             steps {
-                sh "docker build --build-arg APP_VERSION=${APP_VERSION} -t ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${APP_VERSION} ."
+                sh "docker build --build-arg APP_VERSION=${APP_VERSION} -t ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${APP_VERSION} ." // works
             }
         }
 
@@ -73,7 +73,7 @@ pipeline {
                 }
             }
             steps {
-                sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.APP_NAME}:${env.BRANCH_NAME}"
+                sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.APP_NAME}:${APP_VERSION}"
             }
         }
     }
