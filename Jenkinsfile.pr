@@ -45,7 +45,9 @@ pipeline {
             steps {
                 withMaven() {
                     withSonarQubeEnv(env.SONAR_SERVER) {
-                        APP_VERSION = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
+                        script {
+                            APP_VERSION = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
+                        } // srth changwed
                         sh "mvn versions:set -DnewVersion=${APP_VERSION}"
                         sh "mvn clean install sonar:sonar -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.projectName='${env.SONAR_PROJECT_NAME}'"
                     }
