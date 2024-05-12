@@ -1,0 +1,88 @@
+def cleanGit() {
+    sh 'git fetch --all'
+    sh 'git reset --hard'
+    sh 'git clean -fdx'
+}
+
+pipeline {
+    agent any
+    environment {
+        APP_NAME = 'campaign_controller_api'
+        SONAR_SERVER = 'LabSonarQube'
+        SONAR_PROJECT_NAME = 'campaign_controller_api'
+        SONAR_PROJECT_KEY = 'campaign_controller_api'
+        SONAR_SOURCES = './src'
+        SONAR_SONAR_LOGIN = 'adam-stegienko'
+        DOCKER_REGISTRY = 'registry.stegienko.com:8443'
+    }
+    options {
+        timestamps()
+    }
+    tools {
+        maven 'Maven'
+        jdk 'JDK'
+        dockerTool '26.1.1'
+    }
+    stages {
+
+        stage('Clean Workspace') {
+            steps {
+                sshagent(['jenkins_github_np']) {
+                    cleanGit()
+                }
+            }
+        }
+
+        stage('Provide Config Files') {
+            steps {
+                configFileProvider([configFile(fileId: '35c99061-027f-457b-87e9-e5950705128a', targetLocation: 'application.properties'),
+                                configFile(fileId: '973160bc-448d-4b0c-90d6-cd2538c71e43', targetLocation: 'application-test.properties')]) {
+                }
+            }
+        }
+
+        stage('SonarQube analysis') {
+            steps {
+                withMaven() {
+                    withSonarQubeEnv(env.SONAR_SERVER) {
+                        script {
+                            APP_VERSION = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
+                        } // sth
+                        sh "mvn versions:set -DnewVersion=${APP_VERSION}"
+                        sh "mvn clean install sonar:sonar -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.projectName='${env.SONAR_PROJECT_NAME}'"
+                    }
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            when {
+                expression {
+                    return currentBuild.currentResult == 'SUCCESS'
+                }
+            }
+            steps {
+                sh "docker build --build-arg APP_VERSION=${APP_VERSION} -t ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${APP_VERSION} ."
+            }
+        }
+
+        stage('Docker Image Security Scan') {
+            when {
+                expression {
+                   return currentBuild.currentResult == 'SUCCESS'
+                }
+            }
+            steps {
+                sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${APP_VERSION}"
+            }
+        }
+    }
+    post {
+        always {
+            emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
+                 from: 'jenkins+blueflamestk@gmail.com',
+                 subject: "${currentBuild.currentResult}: Job '${env.JOB_NAME}' (${env.BUILD_NUMBER})",
+                 to: 'adam.stegienko1@gmail.com'
+        }
+    }
+}
