@@ -29,6 +29,7 @@ pipeline {
             steps {
                 script {
                     step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Pipeline started"]])
+                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "Build started", state: "PENDING"]]]])
                 }
             }
         }
@@ -89,10 +90,13 @@ pipeline {
         always {
             script {
                 if (currentBuild.currentResult == 'SUCCESS') {
+                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build succeeded", state: "SUCCESS"]]]])
                     step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build succeeded"], statusResult: 'SUCCESS'])
                 } else if (currentBuild.currentResult == 'FAILURE') {
+                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "WorseOrEqualToBuildResult", message: "Build failed", state: "FAILURE"]]]])
                     step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build failed"], statusResult: 'FAILURE'])
                 } else {
+                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "AnyBuildResult", message: "Build aborted. Result: ${currentBuild.currentResult}", state: "ERROR"]]]])
                     step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build aborted. Result: ${currentBuild.currentResult}"], statusResult: 'ERROR'])
                 }
             }
