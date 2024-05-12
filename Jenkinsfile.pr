@@ -93,7 +93,7 @@ pipeline {
                 } else if (currentBuild.currentResult == 'FAILURE') {
                     step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build failed"]])
                 } else {
-                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build finished with result: ${currentBuild.currentResult}"]])
+                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build aborted. Result: ${currentBuild.currentResult}"]])
                 }
             }
             emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
