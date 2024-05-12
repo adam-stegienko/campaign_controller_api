@@ -3,7 +3,6 @@ def cleanGit() {
     sh 'git reset --hard'
     sh 'git clean -fdx'
 }
-
 pipeline {
     agent any
     environment {
