@@ -3,7 +3,7 @@ def cleanGit() {
     sh 'git reset --hard'
     sh 'git clean -fdx'
 }
-// test
+
 pipeline {
     agent any
     environment {
@@ -29,7 +29,6 @@ pipeline {
             steps {
                 sshagent(['jenkins_github_np']) {
                     cleanGit()
-                    sh 'git tag -d $(git tag -l) > /dev/null 2>&1'
                 }
             }
         }
@@ -46,6 +45,8 @@ pipeline {
             steps {
                 withMaven() {
                     withSonarQubeEnv(env.SONAR_SERVER) {
+                        env.APP_VERSION = sh(script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout', returnStdout: true).trim()
+                        sh "mvn versions:set -DnewVersion=${env.APP_VERSION}"
                         sh "mvn clean install sonar:sonar -Dsonar.projectKey=${env.SONAR_PROJECT_KEY} -Dsonar.projectName='${env.SONAR_PROJECT_NAME}'"
                     }
                 }
@@ -59,7 +60,7 @@ pipeline {
                 }
             }
             steps {
-                sh "docker build -t ${env.APP_NAME}:${env.BRANCH_NAME} ."
+                sh "docker build -t ${env.APP_NAME}:${env.APP_VERSION} ."
             }
         }
 
