@@ -212,9 +212,6 @@ pipeline {
                         ports:
                         - "8002:8099"
                         restart: always
-                        limits:
-                            cpus: '0.5'
-                            memory: '512M'
                     EOF
                     '''
                     sh "docker-compose pull ${env.APP_NAME}"
