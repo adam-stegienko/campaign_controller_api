@@ -193,6 +193,36 @@ pipeline {
             }
         }
 
+        stage('Deploy Application to Docker') {
+            when {
+                expression {
+                    return currentBuild.currentResult == 'SUCCESS' && DUPLICATED_TAG == 'false'
+                }
+            }
+            steps {
+                script {
+                    sh '''
+                    cat <<EOF > docker-compose.yml
+                    version: '3'
+                    services:
+                    ${APP_NAME}:
+                        image: ${DOCKER_REGISTRY}/${APP_NAME}:${APP_VERSION}
+                        hostname: ${APP_NAME}
+                        container_name: ${APP_NAME}
+                        ports:
+                        - "8002:8099"
+                        restart: always
+                        limits:
+                            cpus: '0.5'
+                            memory: '512M'
+                    EOF
+                    '''
+                    sh "docker-compose pull ${env.APP_NAME}"
+                    sh "docker-compose up -d --remove-orphans"
+                }
+            }
+        }
+
         stage('Update pom.xml version, Tag, and Push to Git') {
             when {
                 expression {
