@@ -201,19 +201,19 @@ pipeline {
             }
             steps {
                 script {
-                    sh '''
-                    cat <<EOF > docker-compose.yml
-                    version: '3'
-                    services:
-                    ${APP_NAME}:
-                        image: ${DOCKER_REGISTRY}/${APP_NAME}:${APP_VERSION}
-                        hostname: ${APP_NAME}
-                        container_name: ${APP_NAME}
-                        ports:
-                        - "8002:8099"
-                        restart: always
-                    EOF
-                    '''
+                    sh """
+                    cat > docker-compose.yml <<EOF
+version: '3'
+services:
+${APP_NAME}:
+    image: ${DOCKER_REGISTRY}/${APP_NAME}:${APP_VERSION}
+    hostname: ${APP_NAME}
+    container_name: ${APP_NAME}
+    ports:
+    - "8002:8080"
+    restart: always
+EOF
+                    """
                     sh "docker-compose pull ${env.APP_NAME}"
                     sh "docker-compose up -d --remove-orphans"
                 }
