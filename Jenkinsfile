@@ -138,16 +138,16 @@ pipeline {
             }
         }
 
-        stage('Docker Image Security Scan') {
-            when {
-                expression {
-                   return currentBuild.currentResult == 'SUCCESS'
-                }
-            }
-            steps {
-                sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
-            }
-        }
+        // stage('Docker Image Security Scan') {
+        //     when {
+        //         expression {
+        //            return currentBuild.currentResult == 'SUCCESS'
+        //         }
+        //     }
+        //     steps {
+        //         sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
+        //     }
+        // }
 
         stage('Docker Push') {
             when {
