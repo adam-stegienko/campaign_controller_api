@@ -211,12 +211,11 @@ services:
     hostname: ${APP_NAME}
     container_name: ${APP_NAME}
     ports:
-    - "8002:8080"
+      - "8002:8080"
     restart: always
 
 EOF
                     """
-                    sh "docker-compose pull ${env.APP_NAME}"
                     sh "docker-compose up -d --remove-orphans"
                 }
             }
