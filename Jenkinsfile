@@ -204,14 +204,16 @@ pipeline {
                     sh """
                     cat > docker-compose.yml <<EOF
 version: '3'
+
 services:
-${APP_NAME}:
+  ${APP_NAME}:
     image: ${DOCKER_REGISTRY}/${APP_NAME}:${APP_VERSION}
     hostname: ${APP_NAME}
     container_name: ${APP_NAME}
     ports:
     - "8002:8080"
     restart: always
+
 EOF
                     """
                     sh "docker-compose pull ${env.APP_NAME}"
