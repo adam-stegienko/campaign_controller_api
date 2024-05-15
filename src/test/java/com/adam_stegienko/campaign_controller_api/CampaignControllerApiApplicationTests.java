@@ -20,7 +20,7 @@ class CampaignControllerApiTests {
     private TestRestTemplate restTemplate;
 
     @Test
-    public void helloShouldReturnHelloWorld() {
+    void helloShouldReturnHelloWorld() {
         ResponseEntity<String> response = restTemplate.getForEntity("http://localhost:" + port + "/", String.class);
         assertThat(response.getBody()).isEqualTo("Campaign Controller App");
     }

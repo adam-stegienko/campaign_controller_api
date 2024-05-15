@@ -11,13 +11,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class PlannerBookControllerTest {
+class PlannerBookControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void testGetPlannerBooks() throws Exception {
+    void testGetPlannerBooks() throws Exception {
         mockMvc.perform(get("/v1/api/plannerbooks"))
                 .andExpect(status().isOk());
     }
