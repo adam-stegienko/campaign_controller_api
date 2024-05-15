@@ -213,6 +213,12 @@ services:
     ports:
       - "8002:8080"
     restart: always
+    networks:
+      - ${APP_NAME}_network
+
+networks:
+  ${APP_NAME}_network:
+    driver: bridge
 
 EOF
                     """
