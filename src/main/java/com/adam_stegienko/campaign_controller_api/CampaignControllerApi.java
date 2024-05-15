@@ -16,8 +16,8 @@ public class CampaignControllerApi {
   class HelloControler {
 
     @RequestMapping("/")
-    public String hello() {
-      return "Hello, World!";
+    public String campaignControllerMessage() {
+      return "Campaign Controller App";
     }
   }
 }
