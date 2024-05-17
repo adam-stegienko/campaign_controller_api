@@ -24,7 +24,7 @@ public class PlannerBook {
     @Column(name = "action")
     private Integer action;
 
-    @Column(name = "executionDate")
+    @Column(name = "execution_date")
     private LocalDateTime executionDate;
 
     public PlannerBook() {

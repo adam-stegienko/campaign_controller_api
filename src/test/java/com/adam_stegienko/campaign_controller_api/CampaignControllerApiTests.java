@@ -11,7 +11,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.adam_stegienko.campaign_controller_api.controller.PlannerBookController;
-import com.adam_stegienko.campaign_controller_api.repository.PlannerBookRepository;
+import com.adam_stegienko.campaign_controller_api.repositories.PlannerBookRepository;
 
 @SpringBootTest(classes = {CampaignControllerApi.class, PlannerBookRepository.class, PlannerBookController.class})
 @ActiveProfiles("test")

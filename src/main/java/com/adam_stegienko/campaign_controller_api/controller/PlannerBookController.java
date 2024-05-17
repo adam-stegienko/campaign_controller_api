@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.adam_stegienko.campaign_controller_api.model.PlannerBook;
-import com.adam_stegienko.campaign_controller_api.repository.PlannerBookRepository;
+import com.adam_stegienko.campaign_controller_api.repositories.PlannerBookRepository;
 
 @RestController
 @RequestMapping("v1/api/plannerbooks")

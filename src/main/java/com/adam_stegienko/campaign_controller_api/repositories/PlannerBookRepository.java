@@ -1,4 +1,4 @@
-package com.adam_stegienko.campaign_controller_api.repository;
+package com.adam_stegienko.campaign_controller_api.repositories;
 
 import java.util.UUID;
 
