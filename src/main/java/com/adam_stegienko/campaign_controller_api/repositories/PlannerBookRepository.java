@@ -9,5 +9,5 @@ import com.adam_stegienko.campaign_controller_api.model.PlannerBook;
 
 @Repository
 public interface PlannerBookRepository extends JpaRepository<PlannerBook, UUID> {
-    public PlannerBook findByCampaign(String campaign);
+
 }
