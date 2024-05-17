@@ -108,11 +108,9 @@ pipeline {
             }
         }
 
-        stage('Provide Config Files') {
+        stage('Provide Config File') {
             steps {
-                configFileProvider([configFile(fileId: '35c99061-027f-457b-87e9-e5950705128a', targetLocation: 'application.properties'),
-                                configFile(fileId: '973160bc-448d-4b0c-90d6-cd2538c71e43', targetLocation: 'application-test.properties')]) {
-                }
+                configFileProvider([configFile(fileId: '35c99061-027f-457b-87e9-e5950705128a', targetLocation: 'src/main/resources/application.properties')]) {}
             }
         }
 
