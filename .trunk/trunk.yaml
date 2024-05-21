@@ -19,6 +19,7 @@ lint:
   disabled:
     - osv-scanner
   enabled:
+    - checkov@3.2.98
     - git-diff-check
     - markdownlint@0.40.0
     - prettier@3.2.5

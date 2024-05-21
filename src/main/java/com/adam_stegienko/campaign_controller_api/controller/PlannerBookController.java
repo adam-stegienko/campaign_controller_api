@@ -33,12 +33,6 @@ public class PlannerBookController {
         return plannerBookRepository.findAll();
     }
 
-    // GET /v1/api/plannerbooks/{id} - planner book by id
-    // @GetMapping(path = "/{id}")
-    // public Optional<PlannerBook> getPlannerBooksById(@PathVariable UUID id) {
-    //     return plannerBookRepository.findById(id);
-    // }
-
     @GetMapping("/{id}")
     public PlannerBook getPlannerBook(@PathVariable("id") UUID id) {
         return plannerBookRepository.findById(id).orElse(null);
@@ -65,12 +59,6 @@ public class PlannerBookController {
                 return plannerBookRepository.save(updatedPlannerBook);
             });
     }
-
-    // DELETE /v1/api/plannerbooks/{id} - delete planner book by id
-    // @DeleteMapping(path = "/{id}")
-    // public void deletePlannerBook(@PathVariable UUID id) {
-    //     plannerBookRepository.deleteById(id);
-    // }
 
     @DeleteMapping("/{id}")
     public void deletePlannerBook(@PathVariable("id") UUID id) {
