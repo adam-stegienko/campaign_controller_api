@@ -143,7 +143,7 @@ pipeline {
                 }
             }
             steps {
-                sh "trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
+                sh "/snap/bin/trivy image --severity HIGH,CRITICAL --exit-code 1 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
             }
         }
 
