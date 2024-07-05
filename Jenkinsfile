@@ -209,7 +209,7 @@ services:
     hostname: ${APP_NAME}
     container_name: ${APP_NAME}
     ports:
-      - "8002:8080"
+      - "8099:8099"
     restart: always
     networks:
       - ${APP_NAME}_network
@@ -220,7 +220,7 @@ networks:
 
 EOF
                     """
-                    sh "docker-compose up -d --remove-orphans"
+                    sh "docker compose up -d --remove-orphans"
                 }
             }
         }

@@ -7,8 +7,8 @@ LABEL maintainer="adam.stegienko1@gmail.com"
 # Add a volume pointing to /tmp
 VOLUME /tmp
 
-# Make port 8002 available to the world outside this container
-EXPOSE 8002
+# Make port 8099 available to the world outside this container
+EXPOSE 8099
 
 ARG APP_VERSION
 ENV APP_VERSION=$APP_VERSION
