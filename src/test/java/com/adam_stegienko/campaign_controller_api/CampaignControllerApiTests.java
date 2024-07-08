@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -22,6 +23,7 @@ import com.adam_stegienko.campaign_controller_api.repositories.PlannerBookReposi
 @SpringBootTest(classes = {CampaignControllerApi.class, PlannerBookRepository.class, PlannerBookController.class})
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
+@TestPropertySource(properties = "spring.security.enabled=false")
 class CampaignControllerApiTests {
 
     @Autowired
