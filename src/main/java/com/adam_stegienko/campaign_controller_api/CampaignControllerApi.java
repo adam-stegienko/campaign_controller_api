@@ -6,13 +6,10 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-import io.swagger.v3.oas.annotations.OpenAPIDefinition;
-
 @SpringBootApplication(scanBasePackages = {"com.adam_stegienko.campaign_controller_api"})
 @EntityScan("com.adam_stegienko.campaign_controller_api.model")
 @EnableJpaRepositories("com.adam_stegienko.campaign_controller_api.repositories")
 @ComponentScan(basePackages = {"com.adam_stegienko.campaign_controller_api.controller"})
-@OpenAPIDefinition
 public class CampaignControllerApi {
 
   public static void main(String[] args) {
