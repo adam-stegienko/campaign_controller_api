@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,7 +52,7 @@ public class PlannerBookService {
         LocalDateTime now = LocalDateTime.now();
         List<PlannerBook> expiredBooks = plannerBookRepository.findAll().stream()
             .filter(book -> book.getExecutionDate() != null && book.getExecutionDate().isBefore(now))
-            .collect(Collectors.toList());
+            .toList();
 
         expiredBooks.forEach(this::sendEvent);
     }
