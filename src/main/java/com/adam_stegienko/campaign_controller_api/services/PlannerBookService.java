@@ -2,7 +2,10 @@ package com.adam_stegienko.campaign_controller_api.services;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -19,6 +22,7 @@ public class PlannerBookService {
 
     private final PlannerBookRepository plannerBookRepository;
     private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+    private final Set<String> sentEventIds = new HashSet<>();
 
     @Autowired
     public PlannerBookService(PlannerBookRepository plannerBookRepository) {
@@ -29,7 +33,10 @@ public class PlannerBookService {
         SseEmitter emitter = new SseEmitter();
         emitters.add(emitter);
         emitter.onCompletion(() -> emitters.remove(emitter));
-        emitter.onTimeout(() -> emitters.remove(emitter));
+        emitter.onTimeout(() -> {
+            emitter.complete();
+            emitters.remove(emitter);
+        });
         return emitter;
     }
 
@@ -52,12 +59,20 @@ public class PlannerBookService {
     }
 
     private void sendEvent(PlannerBook plannerBook) {
+        String eventId = String.valueOf(plannerBook.getId());
+        if (sentEventIds.contains(eventId)) {
+            return; //
+        }
+
+        List<SseEmitter> failedEmitters = new ArrayList<>();
         for (SseEmitter emitter : emitters) {
             try {
-                emitter.send(SseEmitter.event().name("plannerBookEvent").data(plannerBook));
+                emitter.send(SseEmitter.event().id(eventId).name("plannerBookEvent").data(plannerBook));
+                sentEventIds.add(eventId); // Add event ID to the set after successful send
             } catch (IOException e) {
-                emitters.remove(emitter);
+                failedEmitters.add(emitter);
             }
         }
+        emitters.removeAll(failedEmitters);
     }
 }
