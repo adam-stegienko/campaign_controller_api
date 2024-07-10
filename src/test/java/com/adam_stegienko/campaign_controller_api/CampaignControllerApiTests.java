@@ -114,7 +114,7 @@ class CampaignControllerApiTests {
     }
 
     @Test
-    public void testCheckTimestamps() {
+    void testCheckTimestamps() {
         PlannerBook pastBook1 = new PlannerBook();
         pastBook1.setExecutionDate(LocalDateTime.now().minusDays(1));
 
@@ -129,7 +129,7 @@ class CampaignControllerApiTests {
     }
 
     @Test
-    public void testGetSseEmitter() {
+    void testGetSseEmitter() {
         SseEmitter emitter = plannerBookService.getSseEmitter();
         assertNotNull(emitter);
         assertTrue(plannerBookService.getEmitters().contains(emitter));
