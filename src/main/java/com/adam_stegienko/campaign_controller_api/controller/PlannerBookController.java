@@ -2,9 +2,15 @@ package com.adam_stegienko.campaign_controller_api.controller;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,17 +25,38 @@ import com.adam_stegienko.campaign_controller_api.model.PlannerBook;
 import com.adam_stegienko.campaign_controller_api.repositories.PlannerBookRepository;
 import com.adam_stegienko.campaign_controller_api.services.PlannerBookService;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+
 @RestController
 @RequestMapping("v1/api/plannerbooks")
 public class PlannerBookController {
 
     private final PlannerBookRepository plannerBookRepository;
     private final PlannerBookService plannerBookService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(PlannerBookController.class);
+    private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Autowired
     public PlannerBookController(PlannerBookRepository plannerBookRepository, PlannerBookService plannerBookService) {
         this.plannerBookRepository = plannerBookRepository;
         this.plannerBookService = plannerBookService;
+    }
+
+    @PostConstruct
+    public void init() {}
+
+    @PreDestroy
+    public void cleanUp() {
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination(1, TimeUnit.SECONDS)) {
+                executor.shutdownNow();
+            }
+        } catch (InterruptedException e) {
+            LOGGER.error("Executor shutdown interrupted", e);
+            Thread.currentThread().interrupt(); // Reset the interrupt flag
+        }
     }
 
     // GET /v1/api/plannerbooks - all planner books
@@ -71,8 +98,23 @@ public class PlannerBookController {
     }
 
     @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    @CrossOrigin // If needed
     public SseEmitter streamPlannerBookEvents() {
-        return plannerBookService.getSseEmitter();
-    }
+        final SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
 
+        emitter.onCompletion(() -> LOGGER.info("SseEmitter is completed"));
+        emitter.onTimeout(() -> LOGGER.info("SseEmitter is timed out"));
+        emitter.onError((ex) -> LOGGER.info("SseEmitter got error:", ex));
+
+        executor.execute(() -> {
+            plannerBookService.getEmitters().add(emitter);
+            emitter.onCompletion(() -> plannerBookService.getEmitters().remove(emitter));
+            emitter.onTimeout(() -> {
+                emitter.complete();
+                plannerBookService.getEmitters().remove(emitter);
+            });
+        });
+
+        return emitter;
+    }
 }

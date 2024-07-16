@@ -47,11 +47,11 @@ public class PlannerBookService {
         emitters.clear();
     }
 
-    @Scheduled(fixedRate = 5000) // check every 6 seconds
+    @Scheduled(fixedRate = 30000) // Check every 30 seconds
     public void checkTimestamps() {
         LocalDateTime now = LocalDateTime.now();
         List<PlannerBook> expiredBooks = plannerBookRepository.findAll().stream()
-            .filter(book -> book.getExecutionDate() != null && book.getExecutionDate().isBefore(now))
+            .filter(book -> book.getExecutionDate() != null && !book.getExecutionDate().isAfter(now))
             .toList();
 
         expiredBooks.forEach(this::sendEvent);
