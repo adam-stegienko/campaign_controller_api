@@ -9,8 +9,6 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,11 +17,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import com.adam_stegienko.campaign_controller_api.model.PlannerBook;
 import com.adam_stegienko.campaign_controller_api.repositories.PlannerBookRepository;
-import com.adam_stegienko.campaign_controller_api.services.PlannerBookService;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -33,14 +29,12 @@ import jakarta.annotation.PreDestroy;
 public class PlannerBookController {
 
     private final PlannerBookRepository plannerBookRepository;
-    private final PlannerBookService plannerBookService;
     private static final Logger LOGGER = LoggerFactory.getLogger(PlannerBookController.class);
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Autowired
-    public PlannerBookController(PlannerBookRepository plannerBookRepository, PlannerBookService plannerBookService) {
+    public PlannerBookController(PlannerBookRepository plannerBookRepository) {
         this.plannerBookRepository = plannerBookRepository;
-        this.plannerBookService = plannerBookService;
     }
 
     @PostConstruct
@@ -95,26 +89,5 @@ public class PlannerBookController {
     @DeleteMapping("/{id}")
     public void deletePlannerBook(@PathVariable("id") UUID id) {
         plannerBookRepository.deleteById(id);
-    }
-
-    @GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    @CrossOrigin // If needed
-    public SseEmitter streamPlannerBookEvents() {
-        final SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-
-        emitter.onCompletion(() -> LOGGER.info("SseEmitter is completed"));
-        emitter.onTimeout(() -> LOGGER.info("SseEmitter is timed out"));
-        emitter.onError((ex) -> LOGGER.info("SseEmitter got error:", ex));
-
-        executor.execute(() -> {
-            plannerBookService.getEmitters().add(emitter);
-            emitter.onCompletion(() -> plannerBookService.getEmitters().remove(emitter));
-            emitter.onTimeout(() -> {
-                emitter.complete();
-                plannerBookService.getEmitters().remove(emitter);
-            });
-        });
-
-        return emitter;
     }
 }

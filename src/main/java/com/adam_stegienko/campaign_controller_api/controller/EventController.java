@@ -2,12 +2,11 @@ package com.adam_stegienko.campaign_controller_api.controller;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,21 +17,22 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import com.adam_stegienko.campaign_controller_api.services.PlannerBookService;
+import com.adam_stegienko.campaign_controller_api.model.PlannerBook;
+import com.adam_stegienko.campaign_controller_api.repositories.PlannerBookRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import jakarta.annotation.PostConstruct;
 
 @Controller
 public class EventController {
-
-    private final PlannerBookService plannerBookService;
-    private static final Logger LOGGER = LoggerFactory.getLogger(PlannerBookController.class);
+    private final PlannerBookRepository plannerBookRepository;
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventController.class);
     private final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Autowired
-    public EventController(PlannerBookService plannerBookService) {
-        this.plannerBookService = plannerBookService;
+    public EventController(PlannerBookRepository plannerBookRepository) {
+        this.plannerBookRepository = plannerBookRepository;
     }
 
     @PostConstruct
@@ -57,21 +57,37 @@ public class EventController {
         emitter.onError((ex) -> LOGGER.info("SseEmitter got error:", ex));
         
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
 
         executor.execute(() -> {
-            while (true) { // Or some condition to stop the loop
-                String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm:ss"));
-                Map<String, String> dateTimeMap = new HashMap<>();
-                dateTimeMap.put("dateTime", dateTime);
-                String json = objectMapper.writeValueAsString(dateTimeMap);
+            try {
+                while (true) {
+                    // Fetch planner books from /v1/api/plannerbooks
+                    List<PlannerBook> plannerBooksList = plannerBookRepository.findAll();
 
-                emitter.send(SseEmitter.event().data(json));
-                sleep(1, emitter);
+                    // filter out plannerbooks that have executionDate in the past or equal to now
+                    LocalDateTime now = LocalDateTime.now();
+                    List<PlannerBook> plannerBooks = plannerBooksList.stream()
+                        .filter(book -> book.getExecutionDate() != null && !book.getExecutionDate().isAfter(now))
+                        .collect(Collectors.toList());
+                    TimeUnit.SECONDS.sleep(5); // Sleep for 5 seconds before fetching again
+                    String json = objectMapper.writeValueAsString(plannerBooks);
+                    emitter.send(SseEmitter.event().data(json));
+                }
+            } catch (IOException e) {
+                // Log the error or handle it as needed
+                System.out.println("Client disconnected or error sending event: " + e.getMessage());
+                emitter.completeWithError(e); // Complete the emitter with error if you want to log client disconnection as an error
+            } catch (InterruptedException e) {
+                // Handle other exceptions
+                System.out.println("Error sending event: " + e.getMessage());
+                emitter.completeWithError(e);
+            } finally {
+                emitter.complete(); // Complete the emitter when done
             }
         });
 
         return emitter;
-
     }
     // public SseEmitter streamDateTime() {
 
@@ -106,12 +122,4 @@ public class EventController {
     //     LOGGER.info("Controller exits");
     //     return sseEmitter;
     // }
-
-    private void sleep(int seconds, SseEmitter sseEmitter) {
-        try {
-            Thread.sleep(seconds * 1000);
-        } catch (InterruptedException e) {
-            sseEmitter.completeWithError(e);
-        }
-    }
 }
