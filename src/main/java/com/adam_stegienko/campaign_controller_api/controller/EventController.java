@@ -3,10 +3,10 @@ package com.adam_stegienko.campaign_controller_api.controller;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,12 +67,16 @@ public class EventController {
 
                     // filter out plannerbooks that have executionDate in the past or equal to now
                     LocalDateTime now = LocalDateTime.now();
-                    List<PlannerBook> plannerBooks = plannerBooksList.stream()
+                    Optional<PlannerBook> oldestPlannerBook = plannerBooksList.stream()
                         .filter(book -> book.getExecutionDate() != null && !book.getExecutionDate().isAfter(now))
-                        .collect(Collectors.toList());
+                        .min((book1, book2) -> book1.getExecutionDate().compareTo(book2.getExecutionDate()));
+
+                    if (oldestPlannerBook.isPresent()) {
+                        String json = objectMapper.writeValueAsString(oldestPlannerBook.get());
+                        emitter.send(SseEmitter.event().data(json));
+                    }
+
                     TimeUnit.SECONDS.sleep(5); // Sleep for 5 seconds before fetching again
-                    String json = objectMapper.writeValueAsString(plannerBooks);
-                    emitter.send(SseEmitter.event().data(json));
                 }
             } catch (IOException e) {
                 // Log the error or handle it as needed
