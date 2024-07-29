@@ -220,6 +220,7 @@ networks:
 
 EOF
                     """
+                    sh "docker rm -f ${APP_NAME} || true"
                     sh "docker compose up -d --remove-orphans"
                 }
             }
