@@ -78,14 +78,10 @@ public class EventController {
 
                     TimeUnit.SECONDS.sleep(5); // Sleep for 5 seconds before fetching again
                 }
-            } catch (IOException e) {
+            } catch (IOException | IllegalStateException | InterruptedException e) {
                 // Log the error or handle it as needed
                 System.out.println("Client disconnected or error sending event: " + e.getMessage());
                 emitter.completeWithError(e); // Complete the emitter with error if you want to log client disconnection as an error
-            } catch (InterruptedException e) {
-                // Handle other exceptions
-                System.out.println("Error sending event: " + e.getMessage());
-                emitter.completeWithError(e);
             } finally {
                 emitter.complete(); // Complete the emitter when done
             }
