@@ -143,7 +143,7 @@ pipeline {
                 }
             }
             steps {
-                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy image --severity HIGH,CRITICAL --exit-code 0 ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v cache_dir:/opt/cache aquasec/trivy image --severity HIGH,CRITICAL --exit-code 0 --timeout 10m0s ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
             }
         }
 
