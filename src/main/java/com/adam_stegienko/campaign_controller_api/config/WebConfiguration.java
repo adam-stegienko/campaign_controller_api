@@ -30,7 +30,8 @@ public class WebConfiguration {
                             .allowCredentials(true);
                 } else {
                     registry.addMapping("/v1/api/**")
-                            .allowedOrigins("https://campaign-controller.stegienko.com")
+                            // .allowedOrigins("https://campaign-controller.stegienko.com")
+                            .allowedOrigins("http://localhost:3000", "https://campaign-controller.stegienko.com")
                             .allowedMethods("*")
                             .allowedHeaders("*")
                             .allowCredentials(true);
