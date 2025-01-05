@@ -1,11 +1,13 @@
 package com.adam_stegienko.campaign_controller_api.config;
 
-import com.google.ads.googleads.lib.GoogleAdsClient;
-import com.google.ads.googleads.v18.services.GoogleAdsServiceClient;
-import com.google.auth.oauth2.UserCredentials;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import com.google.ads.googleads.lib.GoogleAdsClient;
+import com.google.ads.googleads.v18.services.CampaignServiceClient;
+import com.google.ads.googleads.v18.services.GoogleAdsServiceClient;
+import com.google.auth.oauth2.UserCredentials;
 
 @Configuration
 public class GoogleAdsApiConfiguration {
@@ -48,12 +50,8 @@ public class GoogleAdsApiConfiguration {
         return googleAdsClient.getLatestVersion().createGoogleAdsServiceClient();
     }
 
-    // @SuppressWarnings("CallToPrintStackTrace")
-    // public void searchCampaigns() {
-    //     try (GoogleAdsServiceClient googleAdsServiceClient = googleAdsClient().getLatestVersion().createGoogleAdsServiceClient()) {
-    //         googleAdsServiceClient.search(customerId, "SELECT campaign.id FROM campaign");
-    //     } catch (Exception e) {
-    //         e.printStackTrace();
-    //     }
-    // }
+    @Bean
+    public CampaignServiceClient campaignServiceClient(GoogleAdsClient googleAdsClient) {
+        return googleAdsClient.getLatestVersion().createCampaignServiceClient();
+    }
 }
