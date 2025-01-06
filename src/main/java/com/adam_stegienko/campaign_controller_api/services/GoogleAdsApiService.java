@@ -1,6 +1,7 @@
 package com.adam_stegienko.campaign_controller_api.services;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,23 +59,23 @@ public class GoogleAdsApiService {
     }
 
     public String getCampaignStatusByNamesList(List<String> campaignNames, String customerId) {
+        String names = campaignNames.stream()
+                .map(name -> String.format("'%s'", name))
+                .collect(Collectors.joining(", "));
+        String query = String.format("SELECT campaign.id, campaign.name, campaign.status FROM campaign WHERE campaign.name IN (%s)", names);
+        SearchGoogleAdsRequest request = SearchGoogleAdsRequest.newBuilder()
+                .setCustomerId(customerId)
+                .setQuery(query)
+                .build();
+
+        SearchPagedResponse response = googleAdsServiceClient.search(request);
         StringBuilder result = new StringBuilder();
 
-        for (Object campaignName : campaignNames) {
-            String query = String.format("SELECT campaign.id, campaign.name, campaign.status FROM campaign WHERE campaign.name = '%s'", campaignName);
-            SearchGoogleAdsRequest request = SearchGoogleAdsRequest.newBuilder()
-                    .setCustomerId(customerId)
-                    .setQuery(query)
-                    .build();
-
-            SearchPagedResponse response = googleAdsServiceClient.search(request);
-
-            for (GoogleAdsRow row : response.iterateAll()) {
-                result.append(String.format("Campaign ID: %d, Campaign Name: %s, Campaign Status: %s%n",
-                        row.getCampaign().getId(),
-                        row.getCampaign().getName(),
-                        row.getCampaign().getStatus()));
-            }
+        for (GoogleAdsRow row : response.iterateAll()) {
+            result.append(String.format("Campaign ID: %d, Campaign Name: %s, Campaign Status: %s%n",
+                    row.getCampaign().getId(),
+                    row.getCampaign().getName(),
+                    row.getCampaign().getStatus()));
         }
 
         logger.info("Google Ads API response: {}", result.toString());
