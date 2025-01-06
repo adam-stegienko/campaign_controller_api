@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.adam_stegienko.campaign_controller_api.services.GoogleAdsApiService;
 
 @RestController
-@RequestMapping("/google-ads")
+@RequestMapping("/v1/api/google-ads")
 public class GoogleAdsApiController {
 
     private final GoogleAdsApiService googleAdsService;
