@@ -5,16 +5,10 @@ import com.adam_stegienko.campaign_controller_api.repositories.PlannerBookReposi
 import com.adam_stegienko.campaign_controller_api.services.GoogleAdsApiService;
 import com.google.ads.googleads.lib.GoogleAdsClient;
 import com.google.ads.googleads.v18.services.GoogleAdsServiceClient;
-import com.google.ads.googleads.v18.services.SearchGoogleAdsRequest;
-import com.google.ads.googleads.v18.services.GoogleAdsRow;
 import com.google.auth.oauth2.UserCredentials;
-import com.google.ads.googleads.v18.enums.CampaignStatusEnum.CampaignStatus;
-import com.google.ads.googleads.v18.resources.Campaign;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,10 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.UUID;
-import java.util.List;
-import java.util.ArrayList;
 
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
