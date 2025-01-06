@@ -1,8 +1,12 @@
 package com.adam_stegienko.campaign_controller_api.services;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.adam_stegienko.campaign_controller_api.dto.CampaignInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,10 +35,13 @@ public class GoogleAdsApiService {
 
     private final CampaignServiceClient campaignServiceClient;
 
+    private final ObjectMapper objectMapper;
+
     @Autowired
-    public GoogleAdsApiService(GoogleAdsServiceClient googleAdsServiceClient, CampaignServiceClient campaignServiceClient) {
+    public GoogleAdsApiService(GoogleAdsServiceClient googleAdsServiceClient, CampaignServiceClient campaignServiceClient, ObjectMapper objectMapper) {
         this.googleAdsServiceClient = googleAdsServiceClient;
         this.campaignServiceClient = campaignServiceClient;
+        this.objectMapper = objectMapper;
     }
 
     public String getCampaignStatusByName(String customerId, String campaignName) {
@@ -45,17 +52,25 @@ public class GoogleAdsApiService {
                 .build();
 
         SearchPagedResponse response = googleAdsServiceClient.search(request);
-        StringBuilder result = new StringBuilder();
+        List<CampaignInfo> campaignInfoList = new ArrayList<>();
 
         for (GoogleAdsRow row : response.iterateAll()) {
-            result.append(String.format("Campaign ID: %d, Campaign Name: %s, Campaign Status: %s%n",
+            campaignInfoList.add(new CampaignInfo(
                     row.getCampaign().getId(),
                     row.getCampaign().getName(),
-                    row.getCampaign().getStatus()));
+                    row.getCampaign().getStatus().name()
+            ));
         }
 
-        logger.info("Google Ads API response: {}", result.toString());
-        return result.toString();
+        try {
+            String jsonResult = objectMapper.writeValueAsString(campaignInfoList);
+            logger.info("Google Ads API response: {}", jsonResult);
+            return jsonResult;
+        } catch (JsonProcessingException e) {
+            String errorMessage = "Failed to convert campaign info to JSON: " + e.getMessage();
+            logger.error(errorMessage, e);
+            return errorMessage;
+        }
     }
 
     public String getCampaignStatusByNamesList(List<String> campaignNames, String customerId) {
@@ -69,17 +84,25 @@ public class GoogleAdsApiService {
                 .build();
 
         SearchPagedResponse response = googleAdsServiceClient.search(request);
-        StringBuilder result = new StringBuilder();
+        List<CampaignInfo> campaignInfoList = new ArrayList<>();
 
         for (GoogleAdsRow row : response.iterateAll()) {
-            result.append(String.format("Campaign ID: %d, Campaign Name: %s, Campaign Status: %s%n",
+            campaignInfoList.add(new CampaignInfo(
                     row.getCampaign().getId(),
                     row.getCampaign().getName(),
-                    row.getCampaign().getStatus()));
+                    row.getCampaign().getStatus().name()
+            ));
         }
 
-        logger.info("Google Ads API response: {}", result.toString());
-        return result.toString();
+        try {
+            String jsonResult = objectMapper.writeValueAsString(campaignInfoList);
+            logger.info("Google Ads API response: {}", jsonResult);
+            return jsonResult;
+        } catch (JsonProcessingException e) {
+            String errorMessage = "Failed to convert campaign info to JSON: " + e.getMessage();
+            logger.error(errorMessage, e);
+            return errorMessage;
+        }
     }
 
     @SuppressWarnings("UseSpecificCatch")
