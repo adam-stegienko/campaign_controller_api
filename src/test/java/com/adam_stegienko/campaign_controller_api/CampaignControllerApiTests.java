@@ -1,9 +1,21 @@
 package com.adam_stegienko.campaign_controller_api;
 
-
-import java.util.UUID;
-
+import com.adam_stegienko.campaign_controller_api.controller.PlannerBookController;
+import com.adam_stegienko.campaign_controller_api.repositories.PlannerBookRepository;
+import com.adam_stegienko.campaign_controller_api.services.GoogleAdsApiService;
+import com.google.ads.googleads.lib.GoogleAdsClient;
+import com.google.ads.googleads.v18.services.GoogleAdsServiceClient;
+import com.google.ads.googleads.v18.services.SearchGoogleAdsRequest;
+import com.google.ads.googleads.v18.services.GoogleAdsRow;
+import com.google.auth.oauth2.UserCredentials;
+import com.google.ads.googleads.v18.enums.CampaignStatusEnum.CampaignStatus;
+import com.google.ads.googleads.v18.resources.Campaign;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -11,15 +23,17 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.UUID;
+import java.util.List;
+import java.util.ArrayList;
+
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import com.adam_stegienko.campaign_controller_api.controller.PlannerBookController;
-import com.adam_stegienko.campaign_controller_api.repositories.PlannerBookRepository;
-;
 
 @SpringBootTest(classes = {CampaignControllerApi.class, PlannerBookRepository.class, PlannerBookController.class})
 @ActiveProfiles("test")
@@ -29,9 +43,14 @@ class CampaignControllerApiTests {
     @Autowired
     private MockMvc mockMvc;
 
-
     @MockBean
     private PlannerBookRepository plannerBookRepository;
+
+    @Mock
+    private GoogleAdsServiceClient googleAdsServiceClient;
+
+    @InjectMocks
+    private GoogleAdsApiService googleAdsApiService;
 
     @Test
     void shouldReturnCampaignControllerApp() throws Exception {
@@ -43,14 +62,6 @@ class CampaignControllerApiTests {
     void shouldReturnPlannerBooks() throws Exception {
         mockMvc.perform(get("/v1/api/plannerbooks"))
             .andExpect(status().isOk());
-    }
-
-    public PlannerBookRepository getPlannerBookRepository() {
-        return plannerBookRepository;
-    }
-
-    public void setPlannerBookRepository(PlannerBookRepository plannerBookRepository) {
-        this.plannerBookRepository = plannerBookRepository;
     }
 
     @Test
@@ -96,34 +107,19 @@ class CampaignControllerApiTests {
             .andExpect(status().isOk());
     }
 
-    // @BeforeEach
-    // public void setUp() {
-    //     plannerBookService.clearEmitters();
-    // }
+    @Test
+    void shouldSetUpGoogleAdsClient() throws Exception {
+        UserCredentials credentials = UserCredentials.newBuilder()
+                .setClientId("test-client-id")
+                .setClientSecret("test-client-secret")
+                .setRefreshToken("test-refresh-token")
+                .build();
 
-    // @Test
-    // void testCheckTimestamps() {
-    //     PlannerBook pastBook1 = new PlannerBook();
-    //     pastBook1.setExecutionDate(LocalDateTime.now().minusDays(1));
+        GoogleAdsClient googleAdsClient = GoogleAdsClient.newBuilder()
+                .setDeveloperToken("test-developer-token")
+                .setCredentials(credentials)
+                .build();
 
-    //     PlannerBook pastBook2 = new PlannerBook();
-    //     pastBook2.setExecutionDate(LocalDateTime.now().minusDays(2));
-
-    //     when(plannerBookRepository.findAll()).thenReturn(Arrays.asList(pastBook1, pastBook2));
-
-    //     plannerBookService.checkTimestamps();
-
-    //     verify(plannerBookRepository, atLeastOnce()).findAll();
-    // }
-
-    // @Test
-    // void testGetSseEmitter() {
-    //     SseEmitter emitter = plannerBookService.getSseEmitter();
-    //     assertNotNull(emitter);
-    //     assertTrue(plannerBookService.getEmitters().contains(emitter));
-
-    //     // emitter.complete();
-    //     // assertFalse(plannerBookService.getEmitters().contains(emitter));
-    // }
-
+        assertNotNull(googleAdsClient);
+    }
 }

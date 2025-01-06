@@ -13,6 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan(basePackages = {"com.adam_stegienko.campaign_controller_api.controller"})
 @ComponentScan(basePackages = {"com.adam_stegienko.campaign_controller_api.services"})
 @ComponentScan(basePackages = {"com.adam_stegienko.campaign_controller_api.config"})
+@ComponentScan(basePackages = {"com.adam_stegienko.campaign_controller_api.dto"})
 @EnableScheduling
 public class CampaignControllerApi {
 
