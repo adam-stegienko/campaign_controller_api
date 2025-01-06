@@ -28,9 +28,19 @@ public class WebConfiguration {
                             .allowedMethods("*")
                             .allowedHeaders("*")
                             .allowCredentials(true);
+                    registry.addMapping("/google-ads/**")
+                            .allowedOrigins("http://localhost:3000", "https://campaign-controller.stegienko.com:8443")
+                            .allowedMethods("*")
+                            .allowedHeaders("*")
+                            .allowCredentials(true);
                 } else {
                     registry.addMapping("/v1/api/**")
-                            .allowedOrigins("http://localhost:3000", "https://campaign-controller.stegienko.com:8443")
+                            .allowedOrigins("https://campaign-controller.stegienko.com:8443")
+                            .allowedMethods("*")
+                            .allowedHeaders("*")
+                            .allowCredentials(true);
+                    registry.addMapping("/google-ads/**")
+                            .allowedOrigins("https://campaign-controller.stegienko.com:8443")
                             .allowedMethods("*")
                             .allowedHeaders("*")
                             .allowCredentials(true);
