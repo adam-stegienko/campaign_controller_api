@@ -27,9 +27,6 @@ public class GoogleAdsApiConfiguration {
     @Value("${api.googleads.loginCustomerId}")
     private String loginCustomerId;
 
-    // @Value("${api.googleads.customerId}")
-    // private String customerId;
-
     @Bean
     public GoogleAdsClient googleAdsClient() {
         UserCredentials credentials = UserCredentials.newBuilder()
