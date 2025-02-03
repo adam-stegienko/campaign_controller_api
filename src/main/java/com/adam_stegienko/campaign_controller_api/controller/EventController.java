@@ -89,37 +89,4 @@ public class EventController {
 
         return emitter;
     }
-    // public SseEmitter streamDateTime() {
-
-    //     SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
-
-    //     sseEmitter.onCompletion(() -> LOGGER.info("SseEmitter is completed"));
-
-    //     sseEmitter.onTimeout(() -> LOGGER.info("SseEmitter is timed out"));
-
-    //     sseEmitter.onError((ex) -> LOGGER.info("SseEmitter got error:", ex));
-
-    //     // Inside your method
-    //     ObjectMapper objectMapper = new ObjectMapper();
-
-    //     executor.execute(() -> {
-    //         for (int i = 0; i < 15; i++) {
-    //             try {
-    //                 String dateTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MM-yyyy-HH:mm:ss"));
-    //                 Map<String, String> dateTimeMap = new HashMap<>();
-    //                 dateTimeMap.put("dateTime", dateTime);
-    //                 String json = objectMapper.writeValueAsString(dateTimeMap);
-                    
-    //                 sseEmitter.send(json);
-    //                 sleep(1, sseEmitter);
-    //             } catch (IOException e) {
-    //                 sseEmitter.completeWithError(e);
-    //             }
-    //         }
-    //         sseEmitter.complete();
-    //     });
-
-    //     LOGGER.info("Controller exits");
-    //     return sseEmitter;
-    // }
 }
