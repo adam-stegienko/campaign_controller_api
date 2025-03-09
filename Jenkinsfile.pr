@@ -24,7 +24,7 @@ pipeline {
         dockerTool '26.1.1'
     }
     environment {
-        MAVEN_OPTS = '-XX:-UseSVE=0'
+        MAVEN_OPTS = '-XX:-UseSVE=0' // maven opts
     }
     stages {
 
