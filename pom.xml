@@ -11,7 +11,7 @@
   <description>Google Campaign Controller API</description>
   <packaging>jar</packaging>
   <properties>
-    <java.version>21</java.version>
+    <java.version>17</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>release</maven.compiler.source>
     <maven.compiler.target>release</maven.compiler.target>
