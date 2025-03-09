@@ -46,6 +46,9 @@ pipeline {
         jdk 'JDK'
         dockerTool '26.1.1'
     }
+    environment {
+        MAVEN_OPTS = '-XX:-UseSVE=0'
+    }
     stages {
 
         stage('Start') {
