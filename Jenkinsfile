@@ -37,6 +37,7 @@ pipeline {
         SONAR_SOURCES = './src'
         SONAR_SONAR_LOGIN = 'adam-stegienko'
         DOCKER_REGISTRY = 'registry.stegienko.com:8443'
+        MAVEN_OPTS = '-XX:-UseSVE=0' // maven opts
     }
     options {
         timestamps()
@@ -45,9 +46,6 @@ pipeline {
         maven 'Maven'
         jdk 'JDK'
         dockerTool '26.1.1'
-    }
-    environment {
-        MAVEN_OPTS = '-XX:-UseSVE=0'
     }
     stages {
 
