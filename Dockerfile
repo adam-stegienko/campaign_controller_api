@@ -1,5 +1,5 @@
 # Start with a base image containing Java runtime
-FROM openjdk:17-oraclelinux9
+FROM openjdk:25-oraclelinux9
 
 # Add Maintainer Info
 LABEL maintainer="adam.stegienko1@gmail.com"
