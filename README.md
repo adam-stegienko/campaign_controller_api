@@ -8,3 +8,5 @@ For further reference, please consider the following sections:
 * [Create an OCI image](https://docs.spring.io/spring-boot/docs/3.2.5/maven-plugin/reference/html/#build-image)
 
 API for Campaign Controller project written in Java programming language.
+
+### New docs paragraph
