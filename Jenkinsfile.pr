@@ -92,19 +92,28 @@ pipeline {
                         $class: "ConditionalStatusResultSource",
                         results: [[$class: "BetterThanOrEqualBuildResult", message: "Build succeeded", state: "SUCCESS"]]
                     ]])
-                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build succeeded"]])
+                    step([$class: "githubPRStatusPublisher",
+                        statusMsg: [content: "Build succeeded"],
+                        unstableAs: "SUCCESS"
+                    ])
                 } else if (currentBuild.currentResult == 'FAILURE') {
                     step([$class: "GitHubCommitStatusSetter", statusResultSource: [
                         $class: "ConditionalStatusResultSource",
                         results: [[$class: "BetterThanOrEqualBuildResult", message: "Build failed", state: "FAILURE"]]
                     ]])
-                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build failed"]])
+                    step([$class: "githubPRStatusPublisher",
+                        statusMsg: [content: "Build failed"],
+                        unstableAs: "FAILURE"
+                    ])
                 } else {
                     step([$class: "GitHubCommitStatusSetter", statusResultSource: [
                         $class: "ConditionalStatusResultSource",
                         results: [[$class: "AnyBuildResult", message: "Build aborted. Result: ${currentBuild.currentResult}", state: "ERROR"]]
                     ]])
-                    step([$class: "GitHubPRStatusBuilder", statusMessage: [content: "Build aborted. Result: ${currentBuild.currentResult}"]])
+                    step([$class: "githubPRStatusPublisher",
+                        statusMsg: [content: "Build aborted. Result: ${currentBuild.currentResult}"],
+                        unstableAs: "ERROR"
+                    ])
                 }
             }
             emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
