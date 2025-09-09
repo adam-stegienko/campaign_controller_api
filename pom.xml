@@ -13,8 +13,8 @@
   <properties>
     <java.version>21</java.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>21</maven.compiler.source>
-    <maven.compiler.target>21</maven.compiler.target>
+    <maven.compiler.source>release</maven.compiler.source>
+    <maven.compiler.target>release</maven.compiler.target>
   </properties>
 
   <dependencies>
@@ -213,7 +213,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>3.2.5</version>
+        <version>3.5.5</version>
         <configuration>
             <mainClass>com.adam_stegienko.campaign_controller_api.CampaignControllerApi</mainClass>
         </configuration>
