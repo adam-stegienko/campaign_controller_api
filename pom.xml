@@ -257,12 +257,8 @@
 
   <repositories>
     <repository>
-      <id>maven-group</id>
-      <url>https://nexus3.stegienko.com:8443/repository/adam-stegienko-group/</url>
-    </repository>
-    <repository>
       <id>central</id>
-      <url>https://repo.maven.apache.org/maven2</url>
+      <url>https://nexus3.stegienko.com:8443/repository/adam-stegienko-group/</url>
     </repository>
   </repositories>
 
