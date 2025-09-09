@@ -1,6 +1,7 @@
 # campaign_controller_api
 
-### Reference Documentation
+## Reference Documentation
+
 For further reference, please consider the following sections:
 
 * [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
@@ -9,4 +10,8 @@ For further reference, please consider the following sections:
 
 API for Campaign Controller project written in Java programming language.
 
-### New docs paragraph
+## Dependency Management
+
+The project uses Maven for dependency management. The dependencies are defined in the `pom.xml` file, and Maven will automatically download and include them in the project.
+
+## New paragraph
