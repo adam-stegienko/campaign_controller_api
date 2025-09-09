@@ -213,7 +213,7 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>3.5.5</version>
+        <version>3.2.5</version>
         <configuration>
             <mainClass>com.adam_stegienko.campaign_controller_api.CampaignControllerApi</mainClass>
         </configuration>
