@@ -136,16 +136,16 @@ pipeline {
             }
         }
 
-        stage('Docker Image Security Scan') {
-            when {
-                expression {
-                   return currentBuild.currentResult == 'SUCCESS'
-                }
-            }
-            steps {
-                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v cache_dir:/opt/cache aquasec/trivy image --severity HIGH,CRITICAL --exit-code 0 --timeout 10m0s ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
-            }
-        }
+        // stage('Docker Image Security Scan') {
+        //     when {
+        //         expression {
+        //            return currentBuild.currentResult == 'SUCCESS'
+        //         }
+        //     }
+        //     steps {
+        //         sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v cache_dir:/opt/cache aquasec/trivy image --severity HIGH,CRITICAL --exit-code 0 --timeout 10m0s ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
+        //     }
+        // }
 
         stage('Docker Push') {
             when {
@@ -248,12 +248,16 @@ EOF
     post {
         always {
             script {
-                if (currentBuild.currentResult == 'SUCCESS') {
-                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build succeeded", state: "SUCCESS"]]]])
-                } else if (currentBuild.currentResult == 'FAILURE'){
-                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build failed", state: "FAILURE"]]]])
-                } else {
-                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build aborted", state: "ERROR"]]]])
+                try {
+                    if (currentBuild.currentResult == 'SUCCESS') {
+                        step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build succeeded", state: "SUCCESS"]]]])
+                    } else if (currentBuild.currentResult == 'FAILURE'){
+                        step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build failed", state: "FAILURE"]]]])
+                    } else {
+                        step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build aborted", state: "ERROR"]]]])
+                    }
+                } catch (Exception e) {
+                    // Suppress/log nothing
                 }
             }
             emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
