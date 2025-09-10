@@ -255,6 +255,8 @@ EOF
                 } else {
                     step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build aborted", state: "ERROR"]]]])
                 }
+            } catch (Exception e) {
+                // Suppress/log nothing
             }
             emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
                  from: 'jenkins+blueflamestk@gmail.com',
