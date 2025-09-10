@@ -247,16 +247,18 @@ EOF
     }
     post {
         always {
-            try {
-                if (currentBuild.currentResult == 'SUCCESS') {
-                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build succeeded", state: "SUCCESS"]]]])
-                } else if (currentBuild.currentResult == 'FAILURE'){
-                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build failed", state: "FAILURE"]]]])
-                } else {
-                    step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build aborted", state: "ERROR"]]]])
+            script {
+                try {
+                    if (currentBuild.currentResult == 'SUCCESS') {
+                        step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build succeeded", state: "SUCCESS"]]]])
+                    } else if (currentBuild.currentResult == 'FAILURE'){
+                        step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build failed", state: "FAILURE"]]]])
+                    } else {
+                        step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build aborted", state: "ERROR"]]]])
+                    }
+                } catch (Exception e) {
+                    // Suppress/log nothing
                 }
-            } catch (Exception e) {
-                // Suppress/log nothing
             }
             emailext body: "Build ${currentBuild.currentResult}: Job ${env.JOB_NAME} build ${env.BUILD_NUMBER}\nMore info at: ${env.BUILD_URL}",
                  from: 'jenkins+blueflamestk@gmail.com',
