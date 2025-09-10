@@ -247,7 +247,7 @@ EOF
     }
     post {
         always {
-            script {
+            try {
                 if (currentBuild.currentResult == 'SUCCESS') {
                     step([$class: "GitHubCommitStatusSetter", statusResultSource: [$class: "ConditionalStatusResultSource", results: [[$class: "BetterThanOrEqualBuildResult", message: "Build succeeded", state: "SUCCESS"]]]])
                 } else if (currentBuild.currentResult == 'FAILURE'){

@@ -86,7 +86,7 @@ pipeline {
     }
     post {
         always {
-            script {
+            try {
                 if (currentBuild.currentResult == 'SUCCESS') {
                     step([$class: "GitHubCommitStatusSetter", statusResultSource: [
                         $class: "ConditionalStatusResultSource",
