@@ -136,16 +136,16 @@ pipeline {
             }
         }
 
-        // stage('Docker Image Security Scan') {
-        //     when {
-        //         expression {
-        //            return currentBuild.currentResult == 'SUCCESS'
-        //         }
-        //     }
-        //     steps {
-        //         sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v cache_dir:/opt/cache aquasec/trivy image --severity HIGH,CRITICAL --exit-code 0 --timeout 10m0s ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
-        //     }
-        // }
+        stage('Docker Image Security Scan') {
+            when {
+                expression {
+                   return currentBuild.currentResult == 'SUCCESS'
+                }
+            }
+            steps {
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v cache_dir:/opt/cache aquasec/trivy image --severity HIGH,CRITICAL --exit-code 0 --timeout 10m0s ${env.DOCKER_REGISTRY}/${env.APP_NAME}:${env.APP_VERSION}"
+            }
+        }
 
         stage('Docker Push') {
             when {
@@ -187,41 +187,6 @@ pipeline {
                         sh "mvn versions:set -DnewVersion=${env.APP_VERSION}"
                         sh 'mvn clean deploy'
                     }
-                }
-            }
-        }
-
-        stage('Deploy Application to Docker') {
-            when {
-                expression {
-                    return currentBuild.currentResult == 'SUCCESS' && DUPLICATED_TAG == 'false'
-                }
-            }
-            steps {
-                script {
-                    sh """
-                    cat > docker-compose.yml <<EOF
-version: '3'
-
-services:
-  ${APP_NAME}:
-    image: ${DOCKER_REGISTRY}/${APP_NAME}:${APP_VERSION}
-    hostname: ${APP_NAME}
-    container_name: ${APP_NAME}
-    ports:
-      - "8099:8099"
-    restart: always
-    networks:
-      - ${APP_NAME}_network
-
-networks:
-  ${APP_NAME}_network:
-    driver: bridge
-
-EOF
-                    """
-                    sh "docker rm -f ${APP_NAME} || true"
-                    sh "docker compose up -d --remove-orphans"
                 }
             }
         }
