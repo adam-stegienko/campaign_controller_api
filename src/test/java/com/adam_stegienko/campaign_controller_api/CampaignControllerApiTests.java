@@ -4,7 +4,7 @@ import com.adam_stegienko.campaign_controller_api.controller.PlannerBookControll
 import com.adam_stegienko.campaign_controller_api.repositories.PlannerBookRepository;
 import com.adam_stegienko.campaign_controller_api.services.GoogleAdsApiService;
 import com.google.ads.googleads.lib.GoogleAdsClient;
-import com.google.ads.googleads.v18.services.GoogleAdsServiceClient;
+import com.google.ads.googleads.v21.services.GoogleAdsServiceClient;
 import com.google.auth.oauth2.UserCredentials;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

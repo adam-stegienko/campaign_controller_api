@@ -11,20 +11,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.util.Arrays;
 
 import com.google.ads.googleads.lib.utils.FieldMasks;
-import com.google.ads.googleads.v18.enums.CampaignStatusEnum.CampaignStatus;
-import com.google.ads.googleads.v18.resources.Campaign;
-import com.google.ads.googleads.v18.services.CampaignOperation;
-import com.google.ads.googleads.v18.services.CampaignServiceClient;
-import com.google.ads.googleads.v18.services.GoogleAdsRow;
-import com.google.ads.googleads.v18.services.GoogleAdsServiceClient;
-import com.google.ads.googleads.v18.services.GoogleAdsServiceClient.SearchPagedResponse;
-import com.google.ads.googleads.v18.services.MutateCampaignResult;
-import com.google.ads.googleads.v18.services.MutateCampaignsResponse;
-import com.google.ads.googleads.v18.services.SearchGoogleAdsRequest;
-import com.google.ads.googleads.v18.utils.ResourceNames;
-import com.google.common.collect.ImmutableList;
+import com.google.ads.googleads.v21.enums.CampaignStatusEnum.CampaignStatus;
+import com.google.ads.googleads.v21.resources.Campaign;
+import com.google.ads.googleads.v21.services.CampaignOperation;
+import com.google.ads.googleads.v21.services.CampaignServiceClient;
+import com.google.ads.googleads.v21.services.GoogleAdsRow;
+import com.google.ads.googleads.v21.services.GoogleAdsServiceClient;
+import com.google.ads.googleads.v21.services.GoogleAdsServiceClient.SearchPagedResponse;
+import com.google.ads.googleads.v21.services.MutateCampaignResult;
+import com.google.ads.googleads.v21.services.MutateCampaignsResponse;
+import com.google.ads.googleads.v21.services.SearchGoogleAdsRequest;
+import com.google.ads.googleads.v21.utils.ResourceNames;
 
 @Service
 public class GoogleAdsApiService {
@@ -132,7 +132,7 @@ public class GoogleAdsApiService {
                     .build();
 
             // Update the campaign
-            MutateCampaignsResponse response = campaignServiceClient.mutateCampaigns(customerId, ImmutableList.of(operation));
+            MutateCampaignsResponse response = campaignServiceClient.mutateCampaigns(customerId, Arrays.asList(operation));
             MutateCampaignResult result = response.getResults(0);
 
             logger.info(result.toString());

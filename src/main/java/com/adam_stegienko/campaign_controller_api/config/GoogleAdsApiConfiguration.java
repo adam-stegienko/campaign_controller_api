@@ -5,8 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import com.google.ads.googleads.lib.GoogleAdsClient;
-import com.google.ads.googleads.v18.services.CampaignServiceClient;
-import com.google.ads.googleads.v18.services.GoogleAdsServiceClient;
+import com.google.ads.googleads.v21.services.CampaignServiceClient;
+import com.google.ads.googleads.v21.services.GoogleAdsServiceClient;
 import com.google.auth.oauth2.UserCredentials;
 
 @Configuration
