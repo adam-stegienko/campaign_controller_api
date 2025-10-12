@@ -22,9 +22,9 @@ public class WebConfiguration {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 // Check if the 'dev' profile is active
-                if (Arrays.asList(env.getActiveProfiles()).contains("dev")) {
+                if (Arrays.asList(env.getActiveProfiles()).contains("local")) {
                     registry.addMapping("/v1/api/**")
-                            .allowedOrigins("http://localhost:3000", "https://campaign-controller.stegienko.com:8443")
+                            .allowedOrigins("http://localhost:3000", "http://10.74.0.123:3000", "https://campaign-controller.stegienko.com:8443")
                             .allowedMethods("*")
                             .allowedHeaders("*")
                             .allowCredentials(true);
