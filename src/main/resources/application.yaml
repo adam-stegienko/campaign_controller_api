@@ -1,0 +1,20 @@
+spring:
+  application:
+    name: campaign_controller_api
+  jpa:
+    hibernate:
+      ddl-auto: update
+  liquibase:
+    change-log: classpath:db/changelog/
+
+server:
+  port: 8000
+
+# OpenAPI properties
+springdoc:
+  swagger-ui:
+    enabled: true
+    operations-sorter: method
+    path: /swagger-ui
+  api-docs:
+    path: /api-docs

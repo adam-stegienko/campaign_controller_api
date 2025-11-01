@@ -31,12 +31,7 @@ import com.google.ads.googleads.v21.services.GoogleAdsServiceClient;
 })
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@TestPropertySource(properties = {
-    "api.googleads.serviceAccountSecretsPath=dummy",
-    "api.googleads.developerToken=dummy",
-    "api.googleads.loginCustomerId=123",
-    "api.googleads.customerId=456"
-})
+@TestPropertySource(locations = "classpath:application-test.yaml")
 class CampaignControllerApiTests {
 
     @Autowired
