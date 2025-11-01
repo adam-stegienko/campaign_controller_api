@@ -108,12 +108,6 @@ pipeline {
             }
         }
 
-        stage('Provide Config File') {
-            steps {
-                configFileProvider([configFile(fileId: '35c99061-027f-457b-87e9-e5950705128a', targetLocation: 'src/main/resources/application.properties')]) {}
-            }
-        }
-
         stage('SonarQube analysis') {
             steps {
                 withMaven() {

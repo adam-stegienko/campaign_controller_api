@@ -37,13 +37,13 @@
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-test</artifactId>
-      <version>6.1.12</version>
+      <version>[6.1.21,)</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-web</artifactId>
-      <version>6.1.12</version>
+      <version>[6.1.21,)</version>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
